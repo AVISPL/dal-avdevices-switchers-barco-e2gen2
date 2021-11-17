@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 import org.springframework.util.CollectionUtils;
@@ -206,10 +207,13 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 				}
 				break;
 			case SCREEN_DESTINATION:
-
 				break;
 			case AUX_DESTINATION:
-
+				boolean changeAuxResult = changeAuxContent(propertyValue, value);
+				if (logger.isDebugEnabled()) {
+					String debugString = changeAuxResult ? String.format("Assign source: %s success!", value) : String.format("Assign source: %s fail!", value);
+					logger.debug(debugString);
+				}
 				break;
 			default:
 				if (logger.isWarnEnabled()) {
@@ -323,7 +327,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		// Generate dropdown options
 		List<String> dropDownOptions = generateDropDownOptions();
 		// Set lastPresetName to first index of dropdown, else lastPresetName = activePresetResult
-		if (activePresetResult.equals(BarcoE2Constant.NONE) && !dropDownOptions.isEmpty()) {
+		if (BarcoE2Constant.NONE.equals(activePresetResult) && !dropDownOptions.isEmpty()) {
 			lastPresetName = dropDownOptions.get(0);
 		}
 		// Populate data to to monitor/control preset.
@@ -433,7 +437,147 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		param.put(BarcoE2Constant.TYPE, 1);
 		return getJsonNode(BarcoE2Constant.METHOD_ACTIVATE_PRESET, param).get(BarcoE2Constant.ACTIVATE_PRESET_SUCCESS).asInt() == 0;
 	}
+	/**
+	 * Routing control: Screen + Aux Destination
+	 *
+	 * @param isScreenDest True: "ScreenDestination", false: "AuxDestination"
+	 * @throws Exception Throw exception if failed to get json node
+	 */
+	private void routingControl(boolean isScreenDest, Map<String, String> stats, List<AdvancedControllableProperty> controls) throws Exception {
+		String methodName = isScreenDest ? BarcoE2ControllingMetric.SCREEN_DESTINATION.getName() : BarcoE2ControllingMetric.AUX_DESTINATION.getName();
+		JsonNode response = getRoutingControlJsonNode(methodName);
+		if (Objects.equals(lastScreenDestName, BarcoE2Constant.DOUBLE_QUOTES)) {
+			lastScreenDestName = response.get(0).get(BarcoE2Constant.NAME).asText();
+		}
+		// Screen/Aux dest loop
+		for (int i = 0; i < response.size(); i++) {
+			JsonNode destContent = getDestContent(isScreenDest, response, i);
+			String currentSourceName = BarcoE2Constant.DOUBLE_QUOTES;
+			int numberOfSource = 0;
+			if (isScreenDest) {
+				// TODO: changeContent not working
+				JsonNode layers = destContent.get(BarcoE2Constant.LAYERS);
+				for (int j = 0; j < layers.size(); j++) {
+					int pgmMode = layers.get(j).get(BarcoE2Constant.PROGRAM_MODE).asInt();
+					int sourceIndex = layers.get(j).get(BarcoE2Constant.LAST_SRC_IDX).asInt();
+					if (pgmMode == 1) {
+						currentSourceName = getListSource().get(sourceIndex);
+						numberOfSource++;
+					}
+				}
+			} else {
+				int lastSrcIndex = destContent.get(BarcoE2Constant.PGM_LAST_SRC_INDEX).asInt();
+				// Assign number of source to 1 because Aux Destination only have 1 source.
+				numberOfSource = 1;
+				currentSourceName = getListSource().get(lastSrcIndex);
+			}
+			List<String> sourceList = new ArrayList<>(getListSource().values());
+			String screenDestName = response.get(i).get(BarcoE2Constant.NAME).asText();
+			populateRouting(stats, methodName, screenDestName, currentSourceName, sourceList, controls, numberOfSource);
+		}
+	}
 
+
+	/**
+	 * Routing control: Get JsonNode destination content
+	 *
+	 * @param isScreenDest boolean for Screen/Aux destination
+	 * @param response Input JsonNode
+	 * @param index The index of destination in the loop
+	 * @return This returns the destination content JsonNode
+	 * @throws Exception Throw exception if failed to get content of destination
+	 */
+	private JsonNode getDestContent(boolean isScreenDest, JsonNode response, int index) throws Exception {
+		int destId = response.get(index).get(BarcoE2Constant.ID).asInt();
+		Map<Object, Object> destParams = new HashMap<>();
+		destParams.put(BarcoE2Constant.ID, destId);
+		String contentMethod = isScreenDest ? BarcoE2Constant.METHOD_LIST_CONTENT : BarcoE2Constant.METHOD_LIST_AUX_CONTENT;
+		return getJsonNode(contentMethod, destParams);
+	}
+
+	/**
+	 * Routing control: Get routing control json node based on Screen/Aux Destination
+	 *
+	 * @param methodName Screen/Aux Destination name
+	 * @return This returns the JsonNode
+	 * @throws Exception Throw exception if failed to get list of destination
+	 */
+	private JsonNode getRoutingControlJsonNode(String methodName) throws Exception {
+		Map<Object, Object> params = new HashMap<>();
+		params.put(BarcoE2Constant.TYPE, BarcoE2Constant.SHOW_ALL_DESTINATION);
+		return getJsonNode(BarcoE2Constant.METHOD_LIST_DESTINATIONS, params).get(methodName);
+	}
+
+	/**
+	 * Routing control: Get all sources of the device.
+	 *
+	 * @return A map contains source ids and source names.
+	 */
+	private Map<Integer, String> getListSource() throws Exception {
+		JsonNode response = getJsonNode(BarcoE2Constant.METHOD_LIST_SOURCES, new HashMap<>());
+		Map<Integer, String> sourceIdAndSourceName = new HashMap<>();
+		for (int i = 0; i < response.size(); i++) {
+			String sourceName = String.valueOf(response.get(i).get(BarcoE2Constant.NAME).asText());
+			int sourceId = response.get(i).get(BarcoE2Constant.ID).asInt();
+			sourceIdAndSourceName.put(sourceId, sourceName);
+		}
+		sourceIdAndSourceName.put(BarcoE2Constant.NO_RECALLED_PRESET, BarcoE2Constant.NONE);
+		return sourceIdAndSourceName;
+
+	}
+
+	/**
+	 * Routing control: Populate monitoring/controlling data for screen/aux destination
+	 *
+	 * @param methodName Type of the destination (ScreenDestination/AuxDestination)
+	 * @param screenDestName Name of the destination
+	 * @param currentSourceName Current source name
+	 * @param sourceList List of sources
+	 * @param numberOfSource Number of sources that are assigned to this destination
+	 */
+	private void populateRouting(Map<String, String> stats, String methodName, String screenDestName, String currentSourceName,
+			List<String> sourceList, List<AdvancedControllableProperty> controls, int numberOfSource) {
+		stats.put(String.format("%s#%s", methodName, screenDestName), BarcoE2Constant.DOUBLE_QUOTES);
+		if (Objects.equals(currentSourceName, BarcoE2Constant.DOUBLE_QUOTES)) {
+			currentSourceName = BarcoE2Constant.NONE;
+		}
+		controls.add(createDropdown(String.format("%s#%s", methodName, screenDestName), currentSourceName, sourceList));
+		if (numberOfSource > 1) {
+			stats.put(String.format("%s#%s%s", methodName, screenDestName, BarcoE2Constant.DESTINATION_STATUS), BarcoE2Constant.DESTINATION_MIXED);
+		}
+	}
+
+	/**
+	 * Routing control:  Assign a new source to Aux Destination
+	 *
+	 * @param auxName Name of Aux Destination
+	 * @param sourceName The source that will be assigned to the Aux Destination
+	 * @return boolean true/false based on the response.
+	 * @throws Exception Throw exception if failed to get json node, call post request.
+	 */
+	private boolean changeAuxContent(String auxName, String sourceName) throws Exception {
+		Map<Integer, String> listSources = getListSource();
+		int newSourceIndex = 0;
+		Map<Object, Object> params = new HashMap<>();
+		Map<Object, Object> changeAuxParams = new HashMap<>();
+		for (Entry<Integer, String> entry : listSources.entrySet()) {
+			if (entry.getValue().equals(sourceName)) {
+				newSourceIndex = entry.getKey();
+				break;
+			}
+		}
+		params.put(BarcoE2Constant.TYPE, BarcoE2Constant.DESTINATION_AUX_TYPE);
+		JsonNode response = getJsonNode(BarcoE2Constant.METHOD_LIST_DESTINATIONS, params).get(BarcoE2ControllingMetric.AUX_DESTINATION.getName());
+		int currentAuxDestId = BarcoE2Constant.NOT_MATCH_AUX_ID;
+		for (int i = 0; i < response.size(); i++) {
+			if (Objects.equals(auxName, response.get(i).get(BarcoE2Constant.NAME).asText())) {
+				currentAuxDestId = response.get(i).get(BarcoE2Constant.ID).asInt();
+			}
+		}
+		changeAuxParams.put(BarcoE2Constant.ID, currentAuxDestId);
+		changeAuxParams.put(BarcoE2Constant.PGM_LAST_SRC_INDEX, newSourceIndex);
+		return getJsonNode(BarcoE2Constant.METHOD_CHANGE_AUX_CONTENT, changeAuxParams).asBoolean();
+	}
 	/**
 	 * Create a button.
 	 *

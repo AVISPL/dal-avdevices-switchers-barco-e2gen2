@@ -26,6 +26,10 @@ public class DeviceInfoDeserializer extends StdDeserializer<DeviceInfo> {
 		this(null);
 	}
 
+	/**
+	 * DeviceInfoDeserializer with arg constructor
+	 * @param vc
+	 */
 	protected DeviceInfoDeserializer(Class<?> vc) {
 		super(vc);
 	}

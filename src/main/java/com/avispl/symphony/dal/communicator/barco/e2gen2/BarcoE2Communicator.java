@@ -16,7 +16,7 @@ import org.springframework.util.CollectionUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.NullNode;
 
 import com.avispl.symphony.api.dal.control.Controller;
 import com.avispl.symphony.api.dal.dto.control.AdvancedControllableProperty;
@@ -29,6 +29,7 @@ import com.avispl.symphony.dal.communicator.RestCommunicator;
 import com.avispl.symphony.dal.communicator.barco.e2gen2.dto.DeviceInfo;
 import com.avispl.symphony.dal.communicator.barco.e2gen2.dto.PowerStatusDTO;
 import com.avispl.symphony.dal.communicator.barco.e2gen2.dto.RpcRequest;
+import com.avispl.symphony.dal.communicator.barco.e2gen2.dto.RpcResponse;
 import com.avispl.symphony.dal.communicator.barco.e2gen2.utils.BarcoE2Constant;
 import com.avispl.symphony.dal.communicator.barco.e2gen2.utils.BarcoE2ControllingMetric;
 import com.avispl.symphony.dal.communicator.barco.e2gen2.utils.BarcoE2MonitoringMetric;
@@ -63,6 +64,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 
 	private ExtendedStatistics localExtendedStatistics;
 	private String lastPresetName = BarcoE2Constant.DOUBLE_QUOTES;
+	private String lastScreenDestName = BarcoE2Constant.DOUBLE_QUOTES;
 	private boolean isFirstTimeMonitor = true;
 
 	/**
@@ -101,6 +103,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 			isFirstTimeMonitor = false;
 		}
 		getPresetFeedBack(statistics, controls);
+		// TODO: changeContent API not working
 	}
 
 	/**
@@ -118,83 +121,22 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	}
 
 	/**
-	 * Preset: Monitor & control
-	 *
-	 * @param stats Map of statistics
-	 * @param controls List of AdvancedControllableProperty
-	 * @throws Exception Throw exceptions if fail to get JsonNode
-	 */
-	public void getPresetFeedBack(Map<String, String> stats, List<AdvancedControllableProperty> controls) throws Exception {
-		JsonNode recallPresetResponse = getJsonNode(BarcoE2Constant.METHOD_LAST_RECALLED_PRESET, new HashMap<>());
-		String activePresetResult = recallPresetResponse.asText();
-		if (activePresetResult.equals(BarcoE2Constant.NO_RECALLED_PRESET) || activePresetResult.equals(BarcoE2Constant.NULL)) {
-			activePresetResult = BarcoE2Constant.NO_PRESET_HAS_BEEN_RECALLED;
-		} else {
-			int activePresetIndex = Integer.parseInt(activePresetResult);
-			Map<Object, Object> presetParam = new HashMap<>();
-			presetParam.put(BarcoE2Constant.ID, activePresetIndex);
-			JsonNode presetResponse = getJsonNode(BarcoE2Constant.METHOD_LIST_DESTINATIONS_FOR_PRESET, presetParam);
-			activePresetResult = String.valueOf(presetResponse.get(BarcoE2Constant.NAME).asText());
-		}
-
-		stats.put(BarcoE2ControllingMetric.PRESETS_LAST_CALLED_PRESET.getName(), activePresetResult);
-		// Generate dropdown options
-		List<String> dropDownOptions = generateDropDownOptions();
-		// Set lastPresetName to first index of dropdown, else lastPresetName = activePresetResult
-		if (activePresetResult.equals(BarcoE2Constant.NO_PRESET_HAS_BEEN_RECALLED)) {
-			lastPresetName = dropDownOptions.get(0);
-		}
-		// Populate data to to monitor/control preset.
-		populatePresetStatsAndControls(stats, controls, dropDownOptions, activePresetResult);
-	}
-
-	/**
-	 * Populate data for preset
-	 *
-	 * @param stats Map of statistics
-	 * @param controls List of AdvancedControllableProperty
-	 * @param dropDownOptions List of dropdown options
-	 */
-	private void populatePresetStatsAndControls(Map<String, String> stats, List<AdvancedControllableProperty> controls, List<String> dropDownOptions, String activePresetResult) {
-		stats.put(BarcoE2ControllingMetric.PRESETS_PRESET.getName(), BarcoE2Constant.DOUBLE_QUOTES);
-		controls.add(createDropdown(BarcoE2ControllingMetric.PRESETS_PRESET.getName(), activePresetResult, dropDownOptions));
-		stats.put(BarcoE2ControllingMetric.PRESETS_PRESET_ACTIVATE.getName(), BarcoE2Constant.DOUBLE_QUOTES);
-		controls.add(createButton(BarcoE2ControllingMetric.PRESETS_PRESET_ACTIVATE.getName(),
-				BarcoE2Constant.LABEL_ACTIVATE_ON_PROGRAM, BarcoE2Constant.LABEL_PRESSED_RECALLING_PRESET, BarcoE2Constant.GRACE_PERIOD));
-	}
-
-	/**
-	 * Add presets to dropdown list
-	 *
-	 * @return This returns List<String> of presets
-	 * @throws Exception Throw exception if fail to get JsonNode
-	 */
-	private List<String> generateDropDownOptions() throws Exception {
-		Map<Object, Object> presetParam = new HashMap<>();
-		presetParam.put(BarcoE2Constant.ID, BarcoE2Constant.LIST_ALL_DESTINATION_FOR_PRESET);
-		JsonNode response = getJsonNode(BarcoE2Constant.METHOD_LIST_DESTINATIONS_FOR_PRESET, presetParam);
-		if (response.size() == 0) {
-			throw new ResourceNotReachableException("There is no preset in the device!");
-		}
-		List<String> dropDownOptions = new ArrayList<>();
-		for (int i = 0; i < response.size(); i++) {
-			String presetName = String.valueOf(response.get(i).get(BarcoE2Constant.NAME).asText());
-			dropDownOptions.add(presetName);
-		}
-		return dropDownOptions;
-	}
-
-	/**
-	 * Call post request on given object.
+	 * Call post request
 	 *
 	 * @return JsonNode returns the JsonNode of given object.
 	 */
-	private JsonNode getJsonNode(String method, Map<Object, Object> param) throws Exception {
-		JsonNode response;
+	protected JsonNode getJsonNode(String method, Map<Object, Object> param) throws Exception {
+		RpcResponse rpcResponse;
 		try {
-			response = this.doPost(BarcoE2Constant.DOUBLE_QUOTES, rpcRequestBody(method, param), JsonNode.class);
-			if (response != null && response.get(BarcoE2Constant.RESULT).get(BarcoE2Constant.SUCCESS).asInt() == 0) {
-				return response.get(BarcoE2Constant.RESULT).get(BarcoE2Constant.RESPONSE);
+			rpcResponse = this.doPost(BarcoE2Constant.DOUBLE_QUOTES, rpcRequestBody(method, param), RpcResponse.class);
+			if (rpcResponse != null && rpcResponse.getSuccessCode() == 0) {
+				if (!NullNode.instance.equals(rpcResponse.getResponse()) && rpcResponse.getResponse() != null) {
+					return rpcResponse.getResponse();
+				} else {
+					return new ObjectMapper().valueToTree(rpcResponse);
+				}
+			} else {
+				throw new ResourceNotReachableException("doPost success but failed to get data from Json RPC");
 			}
 		} catch (Exception e) {
 			if (logger.isWarnEnabled()) {
@@ -202,7 +144,6 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 			}
 			throw e;
 		}
-		return JsonNodeFactory.instance.objectNode();
 	}
 
 	/**
@@ -224,6 +165,96 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	}
 
 	/**
+	 * BarcoE2Communicator doesn't require authentication
+	 *
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void authenticate() {
+		// BarcoE2Communicator doesn't require authentication
+	}
+
+	/**
+	 * Properties that need to be controlled:
+	 * - Routing Control
+	 * - Preset Control
+	 *
+	 * {@inheritDoc}
+	 *
+	 * @throws Exception Throw exception if failed to activePreset, get json node, changeAuxContent
+	 */
+	@Override
+	public void controlProperty(ControllableProperty controllableProperty) throws Exception {
+		String property = controllableProperty.getProperty();
+		String value = String.valueOf(controllableProperty.getValue());
+		String propertyMethod = property.substring(0, property.indexOf(BarcoE2Constant.HASH_TAG));
+		String propertyValue = property.substring(property.indexOf(BarcoE2Constant.HASH_TAG) + 1);
+		if (logger.isDebugEnabled()) {
+			logger.debug(String.format("Controlling device with property: %s and value: %s", property, value));
+		}
+		BarcoE2ControllingMetric barcoE2ControllingMetric = getBarcoE2ControllingMetric(property, propertyMethod);
+		switch (barcoE2ControllingMetric) {
+			case PRESETS_PRESET:
+				lastPresetName = value;
+				break;
+			case PRESETS_PRESET_ACTIVATE:
+				boolean result;
+				result = activatePresetResult();
+				if (logger.isDebugEnabled()) {
+					String debugString = result ? String.format("Activate %s success!", lastPresetName) : String.format("Activate %s fail!", lastPresetName);
+					logger.debug(debugString);
+				}
+				break;
+			case SCREEN_DESTINATION:
+
+				break;
+			case AUX_DESTINATION:
+
+				break;
+			default:
+				if (logger.isWarnEnabled()) {
+					logger.warn(String.format("Operation %s with value %s is not supported.", property, value));
+				}
+				throw new IllegalArgumentException(String.format("Operation %s with value %s is not supported.", property, value));
+		}
+	}
+
+	/**
+	 * Control properties
+	 *
+	 * {@inheritDoc}
+	 *
+	 * @return List<ControllableProperty> This returns the list of ControllableProperty
+	 */
+	@Override
+	public void controlProperties(List<ControllableProperty> list) throws Exception {
+		if (CollectionUtils.isEmpty(list)) {
+			throw new IllegalArgumentException("Controllable properties cannot be null or empty");
+		}
+		for (ControllableProperty controllableProperty : list) {
+			controlProperty(controllableProperty);
+		}
+	}
+
+	/**
+	 * Get Controlling metric based on preset/ routing metric
+	 *
+	 * @param property String of the property from controlProperty
+	 * @param propertyMethod String that is split by property
+	 * @return Return instance of BarcoE2ControllingMetric that based on preset/ routing metric
+	 */
+	private BarcoE2ControllingMetric getBarcoE2ControllingMetric(String property, String propertyMethod) {
+		BarcoE2ControllingMetric barcoE2ControllingMetric;
+		if (propertyMethod.equals(BarcoE2ControllingMetric.SCREEN_DESTINATION.getName()) || propertyMethod.equals(BarcoE2ControllingMetric.AUX_DESTINATION.getName())
+				|| propertyMethod.equals(BarcoE2ControllingMetric.SUPER_SCREEN_DESTINATION.getName()) || propertyMethod.equals(BarcoE2ControllingMetric.SUPER_AUX_DESTINATION.getName())) {
+			barcoE2ControllingMetric = BarcoE2ControllingMetric.getByName(propertyMethod);
+		} else {
+			barcoE2ControllingMetric = BarcoE2ControllingMetric.getByName(property);
+		}
+		return barcoE2ControllingMetric;
+	}
+
+	/**
 	 * Monitor: Retrieve device information.
 	 *
 	 * @param stats Map of statistics
@@ -233,7 +264,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		DeviceInfo deviceInfo = (DeviceInfo) jsonNodeToDTO(deviceInfoResponse, DeviceInfo.class);
 		String macAddress = deviceInfo.getMacAddress();
 		JsonNode powerStatusResponse = getJsonNode(BarcoE2Constant.METHOD_POWER_STATUS, new HashMap<>());
-		deviceInfo.setConnectedUnit(powerStatusResponse.get(macAddress).size());
+		deviceInfo.setConnectedUnit(powerStatusResponse.size());
 		PowerStatusDTO powerStatusDTO = (PowerStatusDTO) jsonNodeToDTO(powerStatusResponse.get(macAddress), PowerStatusDTO.class);
 		// put monitoring data to stats
 		populateDeviceInformationData(stats, deviceInfo, powerStatusDTO);
@@ -280,66 +311,118 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	}
 
 	/**
-	 * BarcoE2Communicator doesn't require authentication
+	 * Preset Control: Monitor & control
 	 *
-	 * {@inheritDoc}
+	 * @param stats Map of statistics
+	 * @param controls List of AdvancedControllableProperty
+	 * @throws Exception Throw exceptions if fail to get JsonNode
 	 */
-	@Override
-	protected void authenticate() {
-		// BarcoE2Communicator doesn't require authentication
+	private void getPresetFeedBack(Map<String, String> stats, List<AdvancedControllableProperty> controls) throws Exception {
+		String activePresetResult = getActivePresetName();
+		stats.put(BarcoE2ControllingMetric.PRESETS_LAST_CALLED_PRESET.getName(), activePresetResult);
+		// Generate dropdown options
+		List<String> dropDownOptions = generateDropDownOptions();
+		// Set lastPresetName to first index of dropdown, else lastPresetName = activePresetResult
+		if (activePresetResult.equals(BarcoE2Constant.NONE) && !dropDownOptions.isEmpty()) {
+			lastPresetName = dropDownOptions.get(0);
+		}
+		// Populate data to to monitor/control preset.
+		populatePresetStatsAndControls(stats, controls, dropDownOptions, activePresetResult);
 	}
 
 	/**
-	 * Properties that need to be controlled:
-	 * - Routing Control
-	 * - Preset Control
+	 * Preset Control: Add presets to dropdown list
 	 *
-	 * {@inheritDoc}
+	 * @return This returns List<String> of presets
+	 * @throws Exception Throw exception if fail to get JsonNode
 	 */
-	@Override
-	public void controlProperty(ControllableProperty controllableProperty) throws Exception {
-		String property = controllableProperty.getProperty();
-		String value = String.valueOf(controllableProperty.getValue());
-		if (logger.isDebugEnabled()) {
-			logger.debug(String.format("Controlling device with property: %s and value: %s", property, value));
+	private List<String> generateDropDownOptions() throws Exception {
+		Map<Object, Object> presetParam = new HashMap<>();
+		presetParam.put(BarcoE2Constant.ID, BarcoE2Constant.LIST_ALL_DESTINATION_FOR_PRESET);
+		JsonNode response = getJsonNode(BarcoE2Constant.METHOD_LIST_DESTINATIONS_FOR_PRESET, presetParam);
+		List<String> dropDownOptions = new ArrayList<>();
+		if (response.size() == 0) {
+			return Collections.emptyList();
 		}
-		BarcoE2ControllingMetric barcoE2ControllingMetric = BarcoE2ControllingMetric.getByName(property);
-		switch (barcoE2ControllingMetric) {
-			case PRESETS_PRESET:
-				lastPresetName = value;
-				break;
-			case PRESETS_PRESET_ACTIVATE:
-				if (logger.isDebugEnabled()) {
-					logger.debug(lastPresetName);
-				}
-				boolean result;
-				if (lastPresetName != null) {
-					result = activatePreset(lastPresetName);
-				} else {
-					// first time running
-					JsonNode recallPresetResponse = getJsonNode(BarcoE2Constant.METHOD_LAST_RECALLED_PRESET, new HashMap<>());
-					String activePresetResult = recallPresetResponse.asText();
-					if (activePresetResult.equals(BarcoE2Constant.NO_RECALLED_PRESET) || activePresetResult.equals(BarcoE2Constant.NULL)) {
-						result = activatePreset(activePresetResult);
-					} else {
-						result = activatePreset(lastPresetName);
-					}
-				}
-				if (logger.isDebugEnabled()) {
-					String debugString = result ? String.format("Activate %s success!", lastPresetName) : String.format("Activate %s fail!", lastPresetName);
-					logger.debug(debugString);
-				}
-				break;
-			default:
-				if (logger.isWarnEnabled()) {
-					logger.warn(String.format("Operation %s with value %s is not supported.", property, value));
-				}
-				throw new IllegalArgumentException(String.format("Operation %s with value %s is not supported.", property, value));
+		for (int i = 0; i < response.size(); i++) {
+			String presetName = String.valueOf(response.get(i).get(BarcoE2Constant.NAME).asText());
+			dropDownOptions.add(presetName);
 		}
+		return dropDownOptions;
 	}
 
 	/**
-	 * Activate a preset by name and type
+	 * Preset Control: Get current activate preset name
+	 *
+	 * @return This returns a preset name
+	 * @throws Exception Throw exception if failed to get json node
+	 */
+	private String getActivePresetName() throws Exception {
+		JsonNode recallPresetResponse = getJsonNode(BarcoE2Constant.METHOD_LAST_RECALLED_PRESET, new HashMap<>());
+		if (recallPresetResponse != null) {
+			JsonNode response;
+			if (recallPresetResponse.isNumber()) {
+				response = recallPresetResponse;
+			} else {
+				response = recallPresetResponse.get(BarcoE2Constant.RESPONSE);
+			}
+			String activePresetResult;
+			if (response.isNull()) {
+				activePresetResult = BarcoE2Constant.NONE;
+			} else {
+				int activePresetIndex = response.asInt();
+				Map<Object, Object> presetParam = new HashMap<>();
+				presetParam.put(BarcoE2Constant.ID, activePresetIndex);
+				JsonNode presetResponse = getJsonNode(BarcoE2Constant.METHOD_LIST_DESTINATIONS_FOR_PRESET, presetParam);
+				activePresetResult = String.valueOf(presetResponse.get(BarcoE2Constant.NAME).asText());
+			}
+			return activePresetResult;
+		}
+		throw new ResourceNotReachableException("Cannot get last called preset");
+	}
+
+	/**
+	 * Preset Control: Populate data for preset
+	 *
+	 * @param stats Map of statistics
+	 * @param controls List of AdvancedControllableProperty
+	 * @param dropDownOptions List of dropdown options
+	 */
+	private void populatePresetStatsAndControls(Map<String, String> stats, List<AdvancedControllableProperty> controls, List<String> dropDownOptions, String activePresetResult) {
+		if (dropDownOptions.isEmpty()) {
+			stats.put(BarcoE2ControllingMetric.PRESETS_PRESET.getName(), BarcoE2Constant.NONE);
+		} else {
+			stats.put(BarcoE2ControllingMetric.PRESETS_PRESET.getName(), BarcoE2Constant.DOUBLE_QUOTES);
+			controls.add(createDropdown(BarcoE2ControllingMetric.PRESETS_PRESET.getName(), activePresetResult, dropDownOptions));
+		}
+		stats.put(BarcoE2ControllingMetric.PRESETS_PRESET_ACTIVATE.getName(), BarcoE2Constant.DOUBLE_QUOTES);
+		controls.add(createButton(BarcoE2ControllingMetric.PRESETS_PRESET_ACTIVATE.getName(),
+				BarcoE2Constant.LABEL_ACTIVATE_ON_PROGRAM, BarcoE2Constant.LABEL_PRESSED_RECALLING_PRESET, BarcoE2Constant.GRACE_PERIOD));
+	}
+
+	/**
+	 * Preset Control: Activate the preset
+	 *
+	 * @return Boolean this returns true/false based on the result of activating preset
+	 * @throws Exception Throws exception if failed to activate
+	 */
+	private boolean activatePresetResult() throws Exception {
+		boolean result;
+		if (!Objects.equals(lastPresetName, BarcoE2Constant.DOUBLE_QUOTES)) {
+			result = activatePreset(lastPresetName);
+		} else {
+			// first time running
+			String activePresetResult = getActivePresetName();
+			if (activePresetResult.equals(BarcoE2Constant.NONE)) {
+				result = activatePreset(lastPresetName);
+			} else {
+				result = activatePreset(activePresetResult);
+			}
+		}
+		return result;
+	}
+	/**
+	 * Preset Control: Activate a preset by name and type
 	 *
 	 * @param presetName name of the preset that need to be activated
 	 * @return boolean type indicates that preset is successfully activated.
@@ -348,8 +431,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		Map<Object, Object> param = new HashMap<>();
 		param.put(BarcoE2Constant.PRESET_NAME, presetName);
 		param.put(BarcoE2Constant.TYPE, 1);
-		return doPost(BarcoE2Constant.DOUBLE_QUOTES, rpcRequestBody(BarcoE2Constant.METHOD_ACTIVATE_PRESET, param), JsonNode.class)
-				.get(BarcoE2Constant.RESULT).get(BarcoE2Constant.SUCCESS).asInt() == 0;
+		return getJsonNode(BarcoE2Constant.METHOD_ACTIVATE_PRESET, param).get(BarcoE2Constant.ACTIVATE_PRESET_SUCCESS).asInt() == 0;
 	}
 
 	/**
@@ -381,23 +463,6 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		dropDown.setOptions(options.toArray(new String[0]));
 		dropDown.setLabels(options.toArray(new String[0]));
 		return new AdvancedControllableProperty(name, new Date(), dropDown, initialValue);
-	}
-
-	/**
-	 * Control properties
-	 *
-	 * {@inheritDoc}
-	 *
-	 * @return List<ControllableProperty> This returns the list of ControllableProperty
-	 */
-	@Override
-	public void controlProperties(List<ControllableProperty> list) throws Exception {
-		if (CollectionUtils.isEmpty(list)) {
-			throw new IllegalArgumentException("Controllable properties cannot be null or empty");
-		}
-		for (ControllableProperty controllableProperty : list) {
-			controlProperty(controllableProperty);
-		}
 	}
 
 }

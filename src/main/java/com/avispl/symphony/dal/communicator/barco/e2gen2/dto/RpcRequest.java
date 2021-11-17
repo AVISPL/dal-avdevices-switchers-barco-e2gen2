@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.avispl.symphony.dal.communicator.barco.e2gen2.utils.BarcoE2Constant;
 
 /**
- * Rpc Request DTO Class
+ * Rpc Request DTO
  *
  * @author Duy Nguyen
  * @since 1.0.0

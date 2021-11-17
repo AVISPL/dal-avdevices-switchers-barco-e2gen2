@@ -1,0 +1,329 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"getFrameSettings\",\"params\":{}, \"id\": 1234}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"System\":{\"id\":0,\"Name\":\"System1\",\"MacAddress\":\"08:00:27:d9:48:fd\",\"Simulator\":1,\"UnitRegistered\":0,\"FrameCollection\":{\"id\":0,\"Frame\":{\"id\":\"08:00:27:d9:48:fd\",\"Name\":\"E2\",\"Contact\":\"\",\"Version\":\"9.0.4878\",\"OSVersion\":\"2.0.4\",\"FrameType\":0,\"FrameTypeName\":\"E2\",\"Enet\":{\"DhcpMode\":0,\"DhcpModeName\":\"Static\",\"IP\":\"192.168.0.175\",\"StaticIP\":\"192.168.000.175\",\"MacAddress\":\"08:00:27:d9:48:fd\",\"StaticMask\":\"255.255.255.000\",\"StaticGateway\":\"192.168.000.001\"},\"SysCard\":{\"SlotState\":2,\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":80,\"CardTypeLabel\":\"System\",\"CardID\":0},\"Slot\":[{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":70,\"CardTypeLabel\":\"Expansion\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":70,\"CardTypeLabel\":\"Expansion\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":1,\"CardTypeLabel\":\"SDI Input\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":1,\"CardTypeLabel\":\"SDI Input\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":0,\"CardTypeLabel\":\"DVI Input\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":0,\"CardTypeLabel\":\"DVI Input\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":2,\"CardTypeLabel\":\"HDMI/DP Input\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":2,\"CardTypeLabel\":\"HDMI/DP Input\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":2,\"CardTypeLabel\":\"HDMI/DP Input\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":2,\"CardTypeLabel\":\"HDMI/DP Input\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":22,\"CardTypeLabel\":\"HDMI 1.4 Output\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":22,\"CardTypeLabel\":\"HDMI 1.4 Output\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":21,\"CardTypeLabel\":\"SDI Output\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":40,\"CardTypeLabel\":\"MVR\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":50,\"CardTypeLabel\":\"VPU Scaler\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":50,\"CardTypeLabel\":\"VPU Scaler\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":50,\"CardTypeLabel\":\"VPU Scaler\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":50,\"CardTypeLabel\":\"VPU Scaler\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":0,\"CardStatusLabel\":\"Not Installed\",\"CardTypeID\":255,\"CardTypeLabel\":\"Unknown\",\"CardID\":\"Undefined\"}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":50,\"CardTypeLabel\":\"VPU Scaler\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":50,\"CardTypeLabel\":\"VPU Scaler\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":50,\"CardTypeLabel\":\"VPU Scaler\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":50,\"CardTypeLabel\":\"VPU Scaler\",\"CardID\":{}}}]}},\"LockMode\":0,\"WebLockMode\":0,\"AutoTake\":0}}},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\", \"method\":\"powerStatus\", \"params\":{},\"id\":1234 }"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"08:00:27:4f:dd:6a\":{\"PowerSupply1Status\":3,\"PowerSupply2Status\":3},\"08:00:27:d9:48:fd\":{\"PowerSupply1Status\":3,\"PowerSupply2Status\":3}}},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\", \"method\":\"lastRecalledPreset\", \"params\":{},\"id\":1234 }"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":0},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listDestinationsForPreset\",\"params\":{\"id\":0}, \"id\": 1234}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"id\":0,\"Name\":\"Screen+Super\",\"LockMode\":0,\"presetSno\":1,\"ScreenDest\":[{\"id\":0}],\"AuxDest\":[]}},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listDestinationsForPreset\",\"params\":{\"id\":-1}, \"id\": 1234}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":[{\"id\":0,\"Name\":\"Screen+Super\",\"LockMode\":0,\"presetSno\":1,\"ScreenDest\":[{\"id\":0}],\"AuxDest\":[]},{\"id\":1,\"Name\":\"Aux+Super\",\"LockMode\":0,\"presetSno\":2,\"ScreenDest\":[],\"AuxDest\":[{\"id\":0}]},{\"id\":2,\"Name\":\"Preset 3.00\",\"LockMode\":0,\"presetSno\":3,\"ScreenDest\":[{\"id\":0}],\"AuxDest\":[]}]},\"id\":\"1234\"}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listDestinations\",\"params\":{\"type\":0}, \"id\": 1234}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"ScreenDestination\":[{\"id\":0,\"Name\":\"Site Screen\",\"HSize\":1920,\"VSize\":1080,\"Layers\":6,\"DestOutMapCol\":{\"DestOutMap\":[{\"id\":0,\"Name\":\"Site projector\",\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080,\"FrzMode\":0}]}},{\"id\":1,\"Name\":\"Main Screen\",\"HSize\":3840,\"VSize\":1080,\"Layers\":6,\"DestOutMapCol\":{\"DestOutMap\":[{\"id\":0,\"Name\":\"Main-Left Projector\",\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080,\"FrzMode\":0},{\"id\":1,\"Name\":\"Main-Right Projector\",\"HPos\":1820,\"VPos\":0,\"HSize\":1920,\"VSize\":1080,\"FrzMode\":0}]}}],\"AuxDestination\":[{\"id\":0,\"AuxStreamMode\":1,\"Name\":\"DSM\",\"FrzMode\":0}]}},\"id\":\"1234\"}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listSources\",\"params\":{}, \"id\": 1234}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":[{\"id\":0,\"Name\":\"CAM1-1\",\"HSize\":1920,\"VSize\":1080,\"SrcType\":0,\"InputCfgIndex\":0,\"StillIndex\":-1,\"DestIndex\":-1,\"UserKeyIndex\":-1,\"InputCfgVideoStatus\":4,\"Mode3D\":\"No\",\"Freeze\":0,\"Capacity\":1},{\"id\":1,\"Name\":\"CAM2-2\",\"HSize\":1920,\"VSize\":1080,\"SrcType\":0,\"InputCfgIndex\":1,\"StillIndex\":-1,\"DestIndex\":-1,\"UserKeyIndex\":-1,\"InputCfgVideoStatus\":4,\"Mode3D\":\"No\",\"Freeze\":0,\"Capacity\":1},{\"id\":2,\"Name\":\"PC-3\",\"HSize\":3840,\"VSize\":1080,\"SrcType\":0,\"InputCfgIndex\":2,\"StillIndex\":-1,\"DestIndex\":-1,\"UserKeyIndex\":-1,\"InputCfgVideoStatus\":4,\"Mode3D\":\"No\",\"Freeze\":0,\"Capacity\":4},{\"id\":3,\"Name\":\"KiPRO1-4\",\"HSize\":1920,\"VSize\":1080,\"SrcType\":0,\"InputCfgIndex\":3,\"StillIndex\":-1,\"DestIndex\":-1,\"UserKeyIndex\":-1,\"InputCfgVideoStatus\":4,\"Mode3D\":\"No\",\"Freeze\":0,\"Capacity\":1},{\"id\":4,\"Name\":\"KiPRO2-5\",\"HSize\":1920,\"VSize\":1080,\"SrcType\":0,\"InputCfgIndex\":4,\"StillIndex\":-1,\"DestIndex\":-1,\"UserKeyIndex\":-1,\"InputCfgVideoStatus\":4,\"Mode3D\":\"No\",\"Freeze\":0,\"Capacity\":1},{\"id\":5,\"Name\":\"Mac-6\",\"HSize\":1920,\"VSize\":1080,\"SrcType\":0,\"InputCfgIndex\":5,\"StillIndex\":-1,\"DestIndex\":-1,\"UserKeyIndex\":-1,\"InputCfgVideoStatus\":4,\"Mode3D\":\"No\",\"Freeze\":0,\"Capacity\":1},{\"id\":6,\"Name\":\"Site Screen_PGM-7\",\"HSize\":1920,\"VSize\":1080,\"SrcType\":2,\"InputCfgIndex\":-1,\"StillIndex\":-1,\"DestIndex\":0,\"UserKeyIndex\":-1,\"Freeze\":0,\"Capacity\":1},{\"id\":7,\"Name\":\"Main Screen_PGM-8\",\"HSize\":3840,\"VSize\":1080,\"SrcType\":2,\"InputCfgIndex\":-1,\"StillIndex\":-1,\"DestIndex\":1,\"UserKeyIndex\":-1,\"Freeze\":0,\"Capacity\":2}]},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ,
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listContent\",\"params\":{\"id\" : 0}, \"id\": 1234}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"id\":0,\"Name\":\"Site Screen\",\"IsActive\":1,\"BGLyr\":[{\"id\":0,\"LastBGSourceIndex\":-1,\"BGShowMatte\":1,\"BGColor\":{\"id\":0,\"Red\":0,\"Green\":0,\"Blue\":0}},{\"id\":1,\"LastBGSourceIndex\":-1,\"BGShowMatte\":1,\"BGColor\":{\"id\":0,\"Red\":0,\"Green\":0,\"Blue\":0}}],\"Layers\":[{\"id\":0,\"Name\":\"Layer1-A\",\"LastSrcIdx\":0,\"PvwMode\":0,\"PgmMode\":1,\"LinkLayerId\":-1,\"LinkDestId\":-1,\"Capacity\":1,\"PvwZOrder\":0,\"PgmZOrder\":0,\"Freeze\":0,\"ScalingMode\":2,\"Window\":[{\"HPos\":993,\"VPos\":241,\"HSize\":928,\"VSize\":522},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Source\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Mask\":[{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0},{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0}]},{\"id\":1,\"Name\":\"Layer1-B\",\"LastSrcIdx\":0,\"PvwMode\":1,\"PgmMode\":0,\"LinkLayerId\":-1,\"LinkDestId\":-1,\"Capacity\":1,\"PvwZOrder\":0,\"PgmZOrder\":0,\"Freeze\":0,\"ScalingMode\":2,\"Window\":[{\"HPos\":993,\"VPos\":241,\"HSize\":928,\"VSize\":522},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Source\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Mask\":[{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0},{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0}]},{\"id\":2,\"Name\":\"Layer2-A\",\"LastSrcIdx\":-1,\"PvwMode\":0,\"PgmMode\":0,\"LinkLayerId\":-1,\"LinkDestId\":-1,\"Capacity\":1,\"PvwZOrder\":2,\"PgmZOrder\":2,\"Freeze\":0,\"ScalingMode\":2,\"Window\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Source\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Mask\":[{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0},{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0}]},{\"id\":3,\"Name\":\"Layer2-B\",\"LastSrcIdx\":-1,\"PvwMode\":0,\"PgmMode\":0,\"LinkLayerId\":-1,\"LinkDestId\":-1,\"Capacity\":1,\"PvwZOrder\":2,\"PgmZOrder\":2,\"Freeze\":0,\"ScalingMode\":2,\"Window\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Source\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Mask\":[{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0},{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0}]},{\"id\":4,\"Name\":\"Layer3-A\",\"LastSrcIdx\":1,\"PvwMode\":0,\"PgmMode\":1,\"LinkLayerId\":0,\"LinkDestId\":0,\"Capacity\":1,\"PvwZOrder\":4,\"PgmZOrder\":4,\"Freeze\":0,\"ScalingMode\":2,\"Window\":[{\"HPos\":4,\"VPos\":246,\"HSize\":928,\"VSize\":522},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Source\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Mask\":[{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0},{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0}]},{\"id\":5,\"Name\":\"Layer3-B\",\"LastSrcIdx\":1,\"PvwMode\":1,\"PgmMode\":0,\"LinkLayerId\":1,\"LinkDestId\":0,\"Capacity\":1,\"PvwZOrder\":4,\"PgmZOrder\":4,\"Freeze\":0,\"ScalingMode\":2,\"Window\":[{\"HPos\":4,\"VPos\":246,\"HSize\":928,\"VSize\":522},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Source\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Mask\":[{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0},{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0}]}],\"Transition\":[{\"id\":0,\"TransTime\":30,\"TransPos\":0,\"ArmMode\":1},{\"id\":1,\"TransTime\":30,\"TransPos\":0,\"ArmMode\":0}],\"OutputCfg\":[{\"id\":1,\"Name\":\"Site projector\",\"OutputAOI\":[{\"id\":0,\"TestPattern\":[{\"id\":0,\"TestPatternMode\":0}]}]}]}},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listAuxContent\",\"params\":{\"id\" :0}, \"id\": 1234}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"id\":0,\"Name\":\"DSM\",\"PvwLastSrcIndex\":-1,\"PgmLastSrcIndex\":0,\"OutputCfg\":[{\"id\":0,\"Name\":\"DSM\",\"OutputAOI\":[{\"id\":0,\"TestPattern\":[{\"id\":0,\"TestPatternMode\":0}]}]}]}},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listContent\",\"params\":{\"id\" :1}, \"id\": 1234}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"id\":1,\"Name\":\"Main Screen\",\"IsActive\":0,\"BGLyr\":[{\"id\":0,\"LastBGSourceIndex\":-1,\"BGShowMatte\":1,\"BGColor\":{\"id\":0,\"Red\":0,\"Green\":0,\"Blue\":0}},{\"id\":1,\"LastBGSourceIndex\":-1,\"BGShowMatte\":1,\"BGColor\":{\"id\":0,\"Red\":0,\"Green\":0,\"Blue\":0}}],\"Layers\":[{\"id\":0,\"Name\":\"Layer1-A\",\"LastSrcIdx\":-1,\"PvwMode\":0,\"PgmMode\":0,\"LinkLayerId\":-1,\"LinkDestId\":-1,\"Capacity\":1,\"PvwZOrder\":0,\"PgmZOrder\":0,\"Freeze\":0,\"ScalingMode\":2,\"Window\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Source\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Mask\":[{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0},{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0}]},{\"id\":1,\"Name\":\"Layer1-B\",\"LastSrcIdx\":-1,\"PvwMode\":0,\"PgmMode\":0,\"LinkLayerId\":-1,\"LinkDestId\":-1,\"Capacity\":1,\"PvwZOrder\":0,\"PgmZOrder\":0,\"Freeze\":0,\"ScalingMode\":2,\"Window\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Source\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Mask\":[{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0},{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0}]},{\"id\":2,\"Name\":\"Layer2-A\",\"LastSrcIdx\":-1,\"PvwMode\":0,\"PgmMode\":0,\"LinkLayerId\":-1,\"LinkDestId\":-1,\"Capacity\":1,\"PvwZOrder\":2,\"PgmZOrder\":2,\"Freeze\":0,\"ScalingMode\":2,\"Window\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Source\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Mask\":[{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0},{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0}]},{\"id\":3,\"Name\":\"Layer2-B\",\"LastSrcIdx\":-1,\"PvwMode\":0,\"PgmMode\":0,\"LinkLayerId\":-1,\"LinkDestId\":-1,\"Capacity\":1,\"PvwZOrder\":2,\"PgmZOrder\":2,\"Freeze\":0,\"ScalingMode\":2,\"Window\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Source\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Mask\":[{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0},{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0}]},{\"id\":4,\"Name\":\"Layer3-A\",\"LastSrcIdx\":-1,\"PvwMode\":0,\"PgmMode\":0,\"LinkLayerId\":-1,\"LinkDestId\":-1,\"Capacity\":1,\"PvwZOrder\":4,\"PgmZOrder\":4,\"Freeze\":0,\"ScalingMode\":2,\"Window\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Source\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Mask\":[{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0},{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0}]},{\"id\":5,\"Name\":\"Layer3-B\",\"LastSrcIdx\":-1,\"PvwMode\":0,\"PgmMode\":0,\"LinkLayerId\":-1,\"LinkDestId\":-1,\"Capacity\":1,\"PvwZOrder\":4,\"PgmZOrder\":4,\"Freeze\":0,\"ScalingMode\":2,\"Window\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Source\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Mask\":[{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0},{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0}]}],\"Transition\":[{\"id\":0,\"TransTime\":30,\"TransPos\":0,\"ArmMode\":0},{\"id\":1,\"TransTime\":30,\"TransPos\":0,\"ArmMode\":0}],\"OutputCfg\":[{\"id\":2,\"Name\":\"Main-Left Projector\",\"OutputAOI\":[{\"id\":0,\"TestPattern\":[{\"id\":0,\"TestPatternMode\":0}]}]},{\"id\":3,\"Name\":\"Main-Right Projector\",\"OutputAOI\":[{\"id\":0,\"TestPattern\":[{\"id\":0,\"TestPatternMode\":0}]}]}]}},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ,
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"activatePreset\",\"params\":{\"presetName\" :\"Screen+Super\", \"type\":1}, \"id\": 1234}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":null},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"getFrameSettings\",\"params\":{}, \"id\": 1234}"
+          }
+        ],
+        "url": "/expect-exception"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"System\":{\"id\":0,\"Name\":\"System3\",\"MacAddress\":\"08:00:27:c8:e2:c3\",\"FrameCollection\":{\"id\":0,\"Frame\":{\"id\":\"08:00:27:c8:e2:c3\",\"Name\":\"E2\",\"Contact\":\"\",\"Version\":\"6.5.2638\",\"OSVersion\":\"2.0.4\",\"FrameType\":0,\"FrameTypeName\":\"E2\",\"Enet\":{\"DhcpMode\":1,\"DhcpModeName\":\"DHCP\",\"IP\":\"192.168.168.6\",\"StaticIP\":\"192.168.000.177\",\"MacAddress\":\"08:00:27:c8:e2:c3\",\"StaticMask\":\"255.255.255.000\",\"StaticGateway\":\"192.168.000.001\"},\"SysCard\":{\"SlotState\":2,\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":80,\"CardTypeLabel\":\"System\",\"CardID\":0},\"Slot\":[{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":70,\"CardTypeLabel\":\"Expansion\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":70,\"CardTypeLabel\":\"Expansion\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":1,\"CardTypeLabel\":\"SDI Input\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":1,\"CardTypeLabel\":\"SDI Input\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":0,\"CardTypeLabel\":\"DVI Input\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":0,\"CardTypeLabel\":\"DVI Input\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":2,\"CardTypeLabel\":\"HDMI/DP Input\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":2,\"CardTypeLabel\":\"HDMI/DP Input\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":2,\"CardTypeLabel\":\"HDMI/DP Input\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":2,\"CardTypeLabel\":\"HDMI/DP Input\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":22,\"CardTypeLabel\":\"HDMI 1.4 Output\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":22,\"CardTypeLabel\":\"HDMI 1.4 Output\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":21,\"CardTypeLabel\":\"SDI Output\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":40,\"CardTypeLabel\":\"MVR\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":50,\"CardTypeLabel\":\"VPU Scaler\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":50,\"CardTypeLabel\":\"VPU Scaler\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":50,\"CardTypeLabel\":\"VPU Scaler\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":50,\"CardTypeLabel\":\"VPU Scaler\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":0,\"CardStatusLabel\":\"Not Installed\",\"CardTypeID\":255,\"CardTypeLabel\":\"Unknown\",\"CardID\":\"Undefined\"}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":50,\"CardTypeLabel\":\"VPU Scaler\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":50,\"CardTypeLabel\":\"VPU Scaler\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":50,\"CardTypeLabel\":\"VPU Scaler\",\"CardID\":{}}},{\"Card\":{\"CardStatusID\":2,\"CardStatusLabel\":\"Ready\",\"CardTypeID\":50,\"CardTypeLabel\":\"VPU Scaler\",\"CardID\":{}}}]}},\"LockMode\":0}}},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },{
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\", \"method\":\"powerStatus\", \"params\":{},\"id\":1234 }"
+          }
+        ],
+        "url": "/expect-exception"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"08:00:27:c8:e2:c3\":{\"PowerSupply1Status\":3,\"PowerSupply2Status\":3}}},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\", \"method\":\"lastRecalledPreset\", \"params\":{},\"id\":1234 }"
+          }
+        ],
+        "url": "/expect-exception"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\", \"method\":\"listDestinationsForPreset\", \"params\":{\"id\": -1},\"id\":1234 }"
+          }
+        ],
+        "url": "/expect-exception"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":[]},\"id\":\"1234\"}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\", \"method\":\"listDestinations\", \"params\":{\"type\": 0},\"id\":1234 }"
+          }
+        ],
+        "url": "/expect-exception"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"ScreenDestination\":[],\"AuxDestination\":[]}},\"id\":\"1234\"}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\", \"method\":\"exceptionMethod\", \"params\":{},\"id\":1234 }"
+          }
+        ],
+        "url": "/expect-exception"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":-1,\"response\":[]},\"id\":\"1234\"}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\", \"method\":\"nullResponseMethod\", \"params\":{},\"id\":1234 }"
+          }
+        ],
+        "url": "/expect-exception"
+      },
+      "response": {
+        "status": 200,
+        "body": "",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}

@@ -58,9 +58,12 @@ public final class BarcoE2Constant {
 	public static final String METHOD_LIST_CONTENT = "listContent";
 	public static final String METHOD_LIST_AUX_CONTENT = "listAuxContent";
 	public static final String METHOD_CHANGE_AUX_CONTENT = "changeAuxContent";
+	public static final String METHOD_LIST_SUPER_DEST_CONTENT = "listSuperDestContent";
+	public static final String METHOD_LIST_SUPER_AUX_CONTENT = "listSuperAuxContent";
 	// Destinations
 	public static final String DESTINATION_STATUS = "Status";
 	public static final String DESTINATION_MIXED = "Mixed";
 	public static final int DESTINATION_AUX_TYPE = 2;
+	public static final String METHOD_LIST_PRESET = "listPresets";
 }
 

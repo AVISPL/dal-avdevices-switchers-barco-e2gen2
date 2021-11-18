@@ -162,6 +162,58 @@
           "Content-Type": "application/json"
         }
       }
+    },{
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listAuxContent\",\"params\":{\"id\" :1}, \"id\": 1234}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"id\":1,\"Name\":\"AuxDest2\",\"PvwLastSrcIndex\":-1,\"PgmLastSrcIndex\":-1,\"OutputCfg\":[{\"id\":4,\"Name\":\"HDMIOutput5\",\"OutputAOI\":[{\"id\":0,\"TestPattern\":[{\"id\":0,\"TestPatternMode\":0}]}]}]}},\"id\":\"1234\"}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listSuperAuxContent\",\"params\":{\"id\" :0}, \"id\": 1234}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body":"{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"id\":0,\"Name\":\"SuperAux1\",\"HDimention\":2,\"VDimention\":1,\"HSize\":3840,\"VSize\":1080,\"AuxDestCollection\":[{\"id\":0,\"DestType\":0,\"DestXmlId\":0,\"Name\":\"DSM\"},{\"id\":1,\"DestType\":0,\"DestXmlId\":1,\"Name\":\"AuxDest2\"}]}},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },{
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listSuperAuxContent\",\"params\":{\"id\" :1}, \"id\": 1234}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body":"{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"id\":0,\"Name\":\"SuperAux1\",\"HDimention\":2,\"VDimention\":1,\"HSize\":3840,\"VSize\":1080,\"AuxDestCollection\":[{\"id\":0,\"DestType\":0,\"DestXmlId\":0,\"Name\":\"DSM\"},{\"id\":1,\"DestType\":0,\"DestXmlId\":1,\"Name\":\"AuxDest2\"}]}},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
     },
     {
       "request": {
@@ -320,6 +372,94 @@
       "response": {
         "status": 200,
         "body": "",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+    ,{
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listSuperAuxContent\",\"params\":{\"id\" :0}, \"id\": 1234}"
+          }
+        ],
+        "url": "/expect-exception"
+      },
+      "response": {
+        "status": 200,
+        "body":"{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"id\":0,\"Name\":\"SuperAux1\",\"HDimention\":2,\"VDimention\":1,\"HSize\":3840,\"VSize\":1080,\"AuxDestCollection\":[{\"id\":0,\"DestType\":0,\"DestXmlId\":0,\"Name\":\"DSM\"},{\"id\":1,\"DestType\":0,\"DestXmlId\":1,\"Name\":\"AuxDest2\"}]}},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },{
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listSuperAuxContent\",\"params\":{\"id\" :1}, \"id\": 1234}"
+          }
+        ],
+        "url": "/expect-exception"
+      },
+      "response": {
+        "status": 200,
+        "body":"{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"id\":0,\"Name\":\"SuperAux1\",\"HDimention\":2,\"VDimention\":1,\"HSize\":3840,\"VSize\":1080,\"AuxDestCollection\":[{\"id\":0,\"DestType\":0,\"DestXmlId\":0,\"Name\":\"DSM\"},{\"id\":1,\"DestType\":0,\"DestXmlId\":1,\"Name\":\"AuxDest2\"}]}},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listSources\",\"params\":{}, \"id\": 1234}"
+          }
+        ],
+        "url": "/expect-exception"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":[{\"id\":0,\"Name\":\"CAM1-1\",\"HSize\":1920,\"VSize\":1080,\"SrcType\":0,\"InputCfgIndex\":0,\"StillIndex\":-1,\"DestIndex\":-1,\"UserKeyIndex\":-1,\"InputCfgVideoStatus\":4,\"Mode3D\":\"No\",\"Freeze\":0,\"Capacity\":1},{\"id\":1,\"Name\":\"CAM2-2\",\"HSize\":1920,\"VSize\":1080,\"SrcType\":0,\"InputCfgIndex\":1,\"StillIndex\":-1,\"DestIndex\":-1,\"UserKeyIndex\":-1,\"InputCfgVideoStatus\":4,\"Mode3D\":\"No\",\"Freeze\":0,\"Capacity\":1},{\"id\":2,\"Name\":\"PC-3\",\"HSize\":3840,\"VSize\":1080,\"SrcType\":0,\"InputCfgIndex\":2,\"StillIndex\":-1,\"DestIndex\":-1,\"UserKeyIndex\":-1,\"InputCfgVideoStatus\":4,\"Mode3D\":\"No\",\"Freeze\":0,\"Capacity\":4},{\"id\":3,\"Name\":\"KiPRO1-4\",\"HSize\":1920,\"VSize\":1080,\"SrcType\":0,\"InputCfgIndex\":3,\"StillIndex\":-1,\"DestIndex\":-1,\"UserKeyIndex\":-1,\"InputCfgVideoStatus\":4,\"Mode3D\":\"No\",\"Freeze\":0,\"Capacity\":1},{\"id\":4,\"Name\":\"KiPRO2-5\",\"HSize\":1920,\"VSize\":1080,\"SrcType\":0,\"InputCfgIndex\":4,\"StillIndex\":-1,\"DestIndex\":-1,\"UserKeyIndex\":-1,\"InputCfgVideoStatus\":4,\"Mode3D\":\"No\",\"Freeze\":0,\"Capacity\":1},{\"id\":5,\"Name\":\"Mac-6\",\"HSize\":1920,\"VSize\":1080,\"SrcType\":0,\"InputCfgIndex\":5,\"StillIndex\":-1,\"DestIndex\":-1,\"UserKeyIndex\":-1,\"InputCfgVideoStatus\":4,\"Mode3D\":\"No\",\"Freeze\":0,\"Capacity\":1},{\"id\":6,\"Name\":\"Site Screen_PGM-7\",\"HSize\":1920,\"VSize\":1080,\"SrcType\":2,\"InputCfgIndex\":-1,\"StillIndex\":-1,\"DestIndex\":0,\"UserKeyIndex\":-1,\"Freeze\":0,\"Capacity\":1},{\"id\":7,\"Name\":\"Main Screen_PGM-8\",\"HSize\":3840,\"VSize\":1080,\"SrcType\":2,\"InputCfgIndex\":-1,\"StillIndex\":-1,\"DestIndex\":1,\"UserKeyIndex\":-1,\"Freeze\":0,\"Capacity\":2}]},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listAuxContent\",\"params\":{\"id\" :0}, \"id\": 1234}"
+          }
+        ],
+        "url": "/expect-exception"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"id\":0,\"Name\":\"DSM\",\"PvwLastSrcIndex\":-1,\"PgmLastSrcIndex\":0,\"OutputCfg\":[{\"id\":0,\"Name\":\"DSM\",\"OutputAOI\":[{\"id\":0,\"TestPattern\":[{\"id\":0,\"TestPatternMode\":0}]}]}]}},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },{
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listAuxContent\",\"params\":{\"id\" :1}, \"id\": 1234}"
+          }
+        ],
+        "url": "/expect-exception"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"id\":1,\"Name\":\"AuxDest2\",\"PvwLastSrcIndex\":-1,\"PgmLastSrcIndex\":-1,\"OutputCfg\":[{\"id\":4,\"Name\":\"HDMIOutput5\",\"OutputAOI\":[{\"id\":0,\"TestPattern\":[{\"id\":0,\"TestPatternMode\":0}]}]}]}},\"id\":\"1234\"}",
         "headers": {
           "Content-Type": "application/json"
         }

@@ -33,6 +33,8 @@ import com.avispl.symphony.dal.communicator.barco.e2gen2.dto.DeviceInfo;
 import com.avispl.symphony.dal.communicator.barco.e2gen2.dto.PowerStatusDTO;
 import com.avispl.symphony.dal.communicator.barco.e2gen2.dto.RpcRequest;
 import com.avispl.symphony.dal.communicator.barco.e2gen2.dto.RpcResponse;
+import com.avispl.symphony.dal.communicator.barco.e2gen2.dto.AuxDestination;
+import com.avispl.symphony.dal.communicator.barco.e2gen2.dto.SuperAuxDestination;
 import com.avispl.symphony.dal.communicator.barco.e2gen2.utils.BarcoE2Constant;
 import com.avispl.symphony.dal.communicator.barco.e2gen2.utils.BarcoE2ControllingMetric;
 import com.avispl.symphony.dal.communicator.barco.e2gen2.utils.BarcoE2MonitoringMetric;
@@ -68,6 +70,44 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	private ExtendedStatistics localExtendedStatistics;
 	private String lastPresetName = BarcoE2Constant.DOUBLE_QUOTES;
 	private boolean isFirstTimeMonitor = true;
+	private String listSuperScreenDestId;
+	private String listSuperAuxDestId;
+
+	/**
+	 * Retrieves {@code {@link #listSuperScreenDestId}}
+	 *
+	 * @return value of {@link #listSuperScreenDestId}
+	 */
+	public String getListSuperScreenDestId() {
+		return listSuperScreenDestId;
+	}
+
+	/**
+	 * Sets {@code listSuperScreenDestId}
+	 *
+	 * @param listSuperScreenDestId the {@code java.lang.String} field
+	 */
+	public void setListSuperScreenDestId(String listSuperScreenDestId) {
+		this.listSuperScreenDestId = listSuperScreenDestId;
+	}
+
+	/**
+	 * Retrieves {@code {@link #listSuperAuxDestId}}
+	 *
+	 * @return value of {@link #listSuperAuxDestId}
+	 */
+	public String getListSuperAuxDestId() {
+		return listSuperAuxDestId;
+	}
+
+	/**
+	 * Sets {@code listSuperAuxDestId}
+	 *
+	 * @param listSuperAuxDestId the {@code java.lang.String} field
+	 */
+	public void setListSuperAuxDestId(String listSuperAuxDestId) {
+		this.listSuperAuxDestId = listSuperAuxDestId;
+	}
 
 	/**
 	 * This method is called by Symphony to get the list of statistics to be displayed
@@ -106,6 +146,9 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		}
 		getPresetFeedBack(statistics, controls);
 		// TODO: changeContent API not working
+		routingControl(true, statistics, controls);
+		routingControl(false, statistics, controls);
+		superRoutingControl(false, statistics, controls);
 	}
 
 	/**
@@ -696,6 +739,110 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	}
 
 	/**
+	 * Routing control: Get routing for super dest/aux
+	 *
+	 * @param isSuperDest boolean true/false if destination is screen/aux destination
+	 * @param stats Map of stats
+	 * @param controls
+	 * @throws Exception Throw exception if failed to get json node,
+	 */
+	private void superRoutingControl(boolean isSuperDest, Map<String, String> stats, List<AdvancedControllableProperty> controls) throws Exception {
+		String methodName = isSuperDest ? BarcoE2ControllingMetric.SUPER_SCREEN_DESTINATION.getName() : BarcoE2ControllingMetric.SUPER_AUX_DESTINATION.getName();
+		List<String> listDestIds = handleListSuperId(isSuperDest);
+		if (listDestIds.isEmpty()) {
+			stats.put(String.format("%s#%s", methodName, BarcoE2Constant.NONE), BarcoE2Constant.NONE);
+		} else {
+			List<String> sourceList = new ArrayList<>(getListSource().values());
+			// Super Screen/Aux dest loop
+			for (String listDestId : listDestIds) {
+				JsonNode response = getSuperRoutingControlJsonNode(isSuperDest, listDestId);
+				if (response == null) {
+					stats.put(String.format("%s#%s", methodName, BarcoE2Constant.NONE), BarcoE2Constant.NONE);
+				} else {
+					if (isSuperDest) {
+						// TODO routing control for super screen destination
+					} else {
+						SuperAuxDestination superAuxDestination = (SuperAuxDestination) jsonNodeToDTO(response, SuperAuxDestination.class);
+						populateSuperRouting(stats, controls, sourceList, methodName, superAuxDestination, false);
+					}
+				}
+			}
+		}
+
+	}
+
+	/**
+	 * Get list of super screen/aux destination ids
+	 *
+	 * @return List<String>
+	 */
+	private List<String> handleListSuperId(boolean isSuperDest) {
+		if (this.getListSuperScreenDestId() != null || this.getListSuperAuxDestId() != null) {
+			try {
+				String[] listIds = isSuperDest? this.getListSuperScreenDestId().split(","): this.getListSuperAuxDestId().split(",");
+				List<String> resultListIds = new ArrayList<>();
+				Collections.addAll(resultListIds, listIds);
+				return resultListIds;
+			} catch (Exception e) {
+				throw new ResourceConflictException("Failed to split the string, input from adapter properties is wrong");
+			}
+		}
+		return Collections.emptyList();
+	}
+	/**
+	 * Routing control: Get super routing control json node based on Super Screen/Aux Destination
+	 *
+	 * @return This returns the JsonNode
+	 * @throws Exception Throw exception if failed to get list of destination
+	 */
+	private JsonNode getSuperRoutingControlJsonNode(boolean isSuperDest, String superDestId) throws Exception {
+		if (this.getListSuperAuxDestId() != null || this.getListSuperScreenDestId() != null) {
+			Map<Object, Object> params = new HashMap<>();
+			JsonNode response;
+			if (isSuperDest) {
+				params.put(BarcoE2Constant.ID, Integer.parseInt(superDestId));
+				response = getByMethod(BarcoE2Constant.METHOD_LIST_SUPER_DEST_CONTENT, params);
+			} else {
+				params.put(BarcoE2Constant.ID, Integer.parseInt(superDestId));
+				response = getByMethod(BarcoE2Constant.METHOD_LIST_SUPER_AUX_CONTENT, params);
+			}
+			// Check if node is null
+			if (!NullNode.instance.equals(response) && response != null) {
+				return response;
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Routing control: Populate monitoring/controlling data for super screen/aux destination
+	 *
+	 * @param methodName Type of the destination (Super ScreenDestination/AuxDestination)
+	 */
+	private void populateSuperRouting(Map<String, String> stats, List<AdvancedControllableProperty> controls, List<String> sourceList, String methodName, SuperAuxDestination superAuxDestination,
+			boolean isScreenDest)
+			throws Exception {
+		if (!isScreenDest) {
+			List<AuxDestination> auxDestinationList = superAuxDestination.getAuxDestinationList();
+			for (AuxDestination auxDestination : auxDestinationList) {
+				stats.put(String.format("%s#%s", methodName, auxDestination.getName()), BarcoE2Constant.DOUBLE_QUOTES);
+				SourceProperties sourceProperties = new SourceProperties();
+				JsonNode auxDestContent = getAuxDestContent(auxDestination.getId());
+				updateSourcePropertiesValue(false, auxDestContent, sourceProperties);
+				if (Objects.equals(sourceProperties.currentSourceName, BarcoE2Constant.DOUBLE_QUOTES)) {
+					sourceProperties.currentSourceName = BarcoE2Constant.NONE;
+				}
+				controls.add(createDropdown(String.format("%s#%s", methodName, auxDestination.getName()), sourceProperties.currentSourceName, sourceList));
+			}
+		} else {
+			// TODO: Super Destination
+		}
+	}
+
+	/**
 	 * Create a button.
 	 *
 	 * @param name name of the button
@@ -725,6 +872,6 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		dropDown.setLabels(options.toArray(new String[0]));
 		return new AdvancedControllableProperty(name, new Date(), dropDown, initialValue);
 	}
-
+	
 }
 

@@ -34,8 +34,8 @@ import com.avispl.symphony.dal.communicator.barco.e2gen2.utils.BarcoE2Monitoring
  * @since 1.0.0
  */
 public class BarcoE2CommunicatorTest {
-	private static final int HTTP_PORT = 9999; // Default port of the simulator
-	private static final String HOST_NAME = "192.168.0.1"; // Simulator IP
+	private static final int HTTP_PORT = 9999;
+	private static final String HOST_NAME = "192.168.0.1";
 	private static final String PROTOCOL = "http";
 	static BarcoE2Communicator barcoE2Communicator;
 	@Rule
@@ -53,6 +53,7 @@ public class BarcoE2CommunicatorTest {
 		barcoE2Communicator.setHost(HOST_NAME);
 		barcoE2Communicator.setContentType("application/json");
 		barcoE2Communicator.setAuthenticationScheme(HttpCommunicator.AuthenticationScheme.None);
+		barcoE2Communicator.setListSuperAuxDestId("0,1");
 		barcoE2Communicator.init();
 	}
 
@@ -160,7 +161,7 @@ public class BarcoE2CommunicatorTest {
 		barcoE2Communicator.destroy();
 		barcoE2Communicator.setBaseUri("/expect-exception");
 		barcoE2Communicator.init();
-		assertThrows(ResourceNotReachableException.class, () -> barcoE2Communicator.getJsonNode("exceptionMethod", new HashMap<>()), "Expect exception here due to success code != 0");
+		assertThrows(ResourceNotReachableException.class, () -> barcoE2Communicator.getByMethod("exceptionMethod", new HashMap<>()), "Expect exception here due to success code != 0");
 	}
 
 	/**
@@ -174,7 +175,7 @@ public class BarcoE2CommunicatorTest {
 		barcoE2Communicator.destroy();
 		barcoE2Communicator.setBaseUri("/expect-exception");
 		barcoE2Communicator.init();
-		assertThrows(ResourceNotReachableException.class, () -> barcoE2Communicator.getJsonNode("nullResponseMethod", new HashMap<>()), "Expect exception here due to null response");
+		assertThrows(ResourceNotReachableException.class, () -> barcoE2Communicator.getByMethod("nullResponseMethod", new HashMap<>()), "Expect exception here due to null response");
 	}
 
 	/**
@@ -188,6 +189,6 @@ public class BarcoE2CommunicatorTest {
 		barcoE2Communicator.destroy();
 		barcoE2Communicator.setBaseUri("/expect-exception");
 		barcoE2Communicator.init();
-		Assertions.assertThrows(Exception.class, () -> barcoE2Communicator.getJsonNode("notExistedMethod", new HashMap<>()), "Expect exception doPost on not existed method");
+		Assertions.assertThrows(Exception.class, () -> barcoE2Communicator.getByMethod("notExistedMethod", new HashMap<>()), "Expect exception doPost on not existed method");
 	}
 }

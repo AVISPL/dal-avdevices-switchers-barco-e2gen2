@@ -107,6 +107,23 @@
           "Content-Type": "application/json"
         }
       }
+    }, {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listDestinations\",\"params\":{\"type\":2}, \"id\": 1234}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"AuxDestination\":[{\"id\":0,\"AuxStreamMode\":1,\"Name\":\"DSM\",\"FrzMode\":0}]}},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
     },
     {
       "request": {
@@ -247,6 +264,41 @@
       "response": {
         "status": 200,
         "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":null},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"changeAuxContent\",\"params\":{\"PgmLastSrcIndex\":0, \"id\":0}, \"id\": 1234}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{}},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },{
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"changeAuxContent\",\"params\":{\"PgmLastSrcIndex\":1, \"id\":0}, \"id\": 1234}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{}},\"id\":1234}",
         "headers": {
           "Content-Type": "application/json"
         }

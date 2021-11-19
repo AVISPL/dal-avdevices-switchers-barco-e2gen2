@@ -40,7 +40,7 @@ public final class BarcoE2Constant {
 	public static final String HASH_TAG = "#";
 	public static final int DEFAULT_ID = 1234;
 	public static final int SHOW_ALL_DESTINATION = 0;
-	public static final String ACTIVATE_PRESET_SUCCESS = "successCode";
+	public static final String SUCCESS_STATUS = "successCode";
 
 
 	// Preset
@@ -65,5 +65,7 @@ public final class BarcoE2Constant {
 	public static final String DESTINATION_MIXED = "Mixed";
 	public static final int DESTINATION_AUX_TYPE = 2;
 	public static final String METHOD_LIST_PRESET = "listPresets";
+	public static final String DASH = "-";
+	public static final String COMMA = ",";
 }
 

@@ -191,4 +191,36 @@ public class BarcoE2CommunicatorTest {
 		barcoE2Communicator.init();
 		Assertions.assertThrows(Exception.class, () -> barcoE2Communicator.getByMethod("notExistedMethod", new HashMap<>()), "Expect exception doPost on not existed method");
 	}
+
+	/**
+	 * Test method for Routing Control
+	 * 	Test assign source to aux destination
+	 *
+	 * @throws Exception Throw exception if failed to retrieve statistics or controls
+	 */
+	@Test
+	public void testRoutingControlCaseAuxDest() throws Exception {
+		barcoE2Communicator.getMultipleStatistics();
+		ControllableProperty property = new ControllableProperty();
+		// Press the "Activate On Program" button.
+		property.setValue("CAM1-1");
+		property.setProperty(String.format("%s#%s", BarcoE2ControllingMetric.AUX_DESTINATION.getName(),"DSM"));
+		barcoE2Communicator.controlProperty(property);
+	}
+
+	/**
+	 * Test method for Routing Control
+	 *	Test assign source to super aux destination
+	 *
+	 * @throws Exception Throw exception if failed to retrieve statistics or controls
+	 */
+	@Test
+	public void testRoutingControlCaseSuperAuxDest() throws Exception {
+		barcoE2Communicator.getMultipleStatistics();
+		ControllableProperty property = new ControllableProperty();
+		// Press the "Activate On Program" button.
+		property.setValue("CAM2-2");
+		property.setProperty(String.format("%s#%s-%s", BarcoE2ControllingMetric.SUPER_AUX_DESTINATION.getName(),"SuperAux1","DSM"));
+		barcoE2Communicator.controlProperty(property);
+	}
 }

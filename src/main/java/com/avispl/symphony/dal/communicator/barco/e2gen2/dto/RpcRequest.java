@@ -16,12 +16,16 @@ import com.avispl.symphony.dal.communicator.barco.e2gen2.utils.BarcoE2Constant;
  * @since 1.0.0
  */
 public class RpcRequest {
+
 	@JsonProperty("jsonrpc")
 	private String jsonrpc = BarcoE2Constant.DEFAULT_RPC_VERSION;
+
 	@JsonProperty("method")
 	private String method;
+
 	@JsonProperty("params")
 	private Map<Object, Object> params;
+
 	@JsonProperty("id")
 	private int id = BarcoE2Constant.DEFAULT_ID;
 

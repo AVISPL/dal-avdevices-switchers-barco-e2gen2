@@ -6,6 +6,7 @@ package com.avispl.symphony.dal.communicator.barco.e2gen2.dto;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import com.avispl.symphony.dal.communicator.barco.e2gen2.utils.BarcoE2Constant;
 import com.avispl.symphony.dal.communicator.barco.e2gen2.utils.RpcResponseDeserializer;
 
 /**
@@ -16,10 +17,14 @@ import com.avispl.symphony.dal.communicator.barco.e2gen2.utils.RpcResponseDeseri
  */
 @JsonDeserialize(using = RpcResponseDeserializer.class)
 public class RpcResponse {
-	private String jsonrpc = "jsonrpc";
+
+	private String jsonrpc = BarcoE2Constant.DEFAULT_JSONRPC;
+
 	private Integer successCode;
+
 	private JsonNode response;
-	private int id = 1234;
+
+	private int id = BarcoE2Constant.DEFAULT_RPC_ID;
 
 	/**
 	 * Retrieves {@code {@link #jsonrpc}}

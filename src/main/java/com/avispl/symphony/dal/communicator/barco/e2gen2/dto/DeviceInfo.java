@@ -18,15 +18,25 @@ import com.avispl.symphony.dal.communicator.barco.e2gen2.utils.DeviceInfoDeseria
  */
 @JsonDeserialize(using = DeviceInfoDeserializer.class)
 public class DeviceInfo {
+
 	private int id;
+
 	private String name;
+
 	private String macAddress;
+
 	private String frameWareVersion;
+
 	private String deviceId;
+
 	private String frameTypeName;
+
 	private boolean dhcpMode;
+
 	private String ip;
+
 	private String staticIP;
+
 	@JsonIgnore
 	private int connectedUnit;
 
@@ -206,7 +216,6 @@ public class DeviceInfo {
 	 *
 	 * @param staticIP the {@code java.lang.String} field
 	 */
-
 	public void setStaticIP(String staticIP) {
 		this.staticIP = staticIP;
 	}

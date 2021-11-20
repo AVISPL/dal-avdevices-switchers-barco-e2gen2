@@ -11,7 +11,7 @@
   <properties>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
-    <symphonyApiVersion>RELEASE</symphonyApiVersion>
+    <symphonyApiVersion>5.3.0</symphonyApiVersion>
   </properties>
   <build>
     <plugins>
@@ -27,35 +27,33 @@
           <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.6.0-M1</version>
+            <version>RELEASE</version>
           </dependency>
         </dependencies>
       </plugin>
     </plugins>
-
   </build>
-
   <dependencies>
     <dependency>
       <groupId>com.avispl.symphony.api</groupId>
       <artifactId>symphony-api-dal</artifactId>
       <version>${symphonyApiVersion}</version>
       <scope>system</scope>
-      <systemPath>${basedir}/lib/symphony-api-dal-5.3.0.11028.jar</systemPath>
+      <systemPath>${basedir}/lib/symphony-api-dal-5.3.0.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>com.avispl.symphony.dal</groupId>
       <artifactId>symphony-dal-commons</artifactId>
       <version>${symphonyApiVersion}</version>
       <scope>system</scope>
-      <systemPath>${basedir}/lib/symphony-dal-commons-5.3.0.11028.jar</systemPath>
+      <systemPath>${basedir}/lib/symphony-dal-commons-5.3.0.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>com.avispl.symphony.api</groupId>
       <artifactId>symphony-api-commons</artifactId>
       <version>${symphonyApiVersion}</version>
       <scope>system</scope>
-      <systemPath>${basedir}/lib/symphony-api-commons-5.3.0.11028.jar</systemPath>
+      <systemPath>${basedir}/lib/symphony-api-commons-5.3.0.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>org.icmp4j</groupId>
@@ -75,6 +73,18 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
+      <version>2.11.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>2.11.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
       <version>2.11.1</version>
       <scope>provided</scope>
     </dependency>
@@ -136,14 +146,26 @@
     </dependency>
     <dependency>
       <groupId>com.github.tomakehurst</groupId>
-      <artifactId>wiremock</artifactId>
-      <version>2.26.3</version>
+      <artifactId>wiremock-jre8</artifactId>
+      <version>2.31.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.atlassian.ta</groupId>
-      <artifactId>wiremock-pact-generator</artifactId>
-      <version>2.4.0</version>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>3.8.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <version>2.23.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-inline</artifactId>
+      <version>3.8.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

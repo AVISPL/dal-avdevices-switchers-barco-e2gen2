@@ -28,12 +28,21 @@ public class DeviceInfoDeserializer extends StdDeserializer<DeviceInfo> {
 
 	/**
 	 * DeviceInfoDeserializer with arg constructor
-	 * @param vc
+	 * @param vc Class
 	 */
 	protected DeviceInfoDeserializer(Class<?> vc) {
 		super(vc);
 	}
 
+	/**
+	 * Override deserialize class for DeviceInfo
+	 * {@inheritDoc}
+	 *
+	 * @param jp JsonParser
+	 * @param deserializationContext DeserializationContext
+	 * @return DeviceInfo
+	 * @throws IOException Throw exception when failed to get JsonNode
+	 */
 	@Override
 	public DeviceInfo deserialize(JsonParser jp, DeserializationContext deserializationContext) throws IOException {
 		JsonNode deviceInfoNode = jp.getCodec().readTree(jp);

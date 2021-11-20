@@ -19,6 +19,7 @@ import com.avispl.symphony.dal.communicator.barco.e2gen2.dto.RpcResponse;
  * @since 1.0.0
  */
 public class RpcResponseDeserializer extends StdDeserializer<RpcResponse> {
+
 	/**
 	 * DeviceInfoDeserializer constructor
 	 */
@@ -28,12 +29,21 @@ public class RpcResponseDeserializer extends StdDeserializer<RpcResponse> {
 
 	/**
 	 * DeviceInfoDeserializer with arg constructor
-	 * @param vc
+	 * @param vc Class
 	 */
 	protected RpcResponseDeserializer(Class<?> vc) {
 		super(vc);
 	}
 
+	/**
+	 * Override deserialize class for RpcResponse
+	 * {@inheritDoc}
+	 *
+	 * @param jp JsonParser
+	 * @param deserializationContext DeserializationContext
+	 * @return RpcResponse
+	 * @throws IOException Throw exception when failed to get JsonNode
+	 */
 	@Override
 	public RpcResponse deserialize(JsonParser jp, DeserializationContext deserializationContext) throws IOException {
 		JsonNode rpcResponseNode = jp.getCodec().readTree(jp);

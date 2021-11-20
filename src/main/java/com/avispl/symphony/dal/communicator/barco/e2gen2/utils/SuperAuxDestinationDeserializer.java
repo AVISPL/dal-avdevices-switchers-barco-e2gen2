@@ -22,6 +22,7 @@ import com.avispl.symphony.dal.communicator.barco.e2gen2.dto.SuperAuxDestination
  * @since 1.0.0
  */
 public class SuperAuxDestinationDeserializer extends StdDeserializer<SuperAuxDestination> {
+
 	/**
 	 * SuperAuxDestinationDeserializer constructor
 	 */
@@ -31,23 +32,32 @@ public class SuperAuxDestinationDeserializer extends StdDeserializer<SuperAuxDes
 
 	/**
 	 * SuperAuxDestinationDeserializer with arg constructor
-	 * @param vc
+	 * @param vc Class
 	 */
 	protected SuperAuxDestinationDeserializer(Class<?> vc) {
 		super(vc);
 	}
 
+	/**
+	 * Override deserialize class for SuperAuxDestination
+	 * {@inheritDoc}
+	 *
+	 * @param jp JsonParser
+	 * @param deserializationContext DeserializationContext
+	 * @return RpcResponse
+	 * @throws IOException Throw exception when failed to get JsonNode
+	 */
 	@Override
 	public  SuperAuxDestination deserialize(JsonParser jp, DeserializationContext deserializationContext) throws IOException {
 		JsonNode jsonNode = jp.getCodec().readTree(jp);
 		SuperAuxDestination superAuxDestination = new SuperAuxDestination();
 		superAuxDestination.setId(jsonNode.get(BarcoE2Constant.ID).asInt());
 		superAuxDestination.setName(jsonNode.get(BarcoE2Constant.NAME).asText());
-		superAuxDestination.setHdiMention(jsonNode.get("HDimention").asInt());
-		superAuxDestination.setVdiMention(jsonNode.get("VDimention").asInt());
-		superAuxDestination.sethSize(jsonNode.get("HSize").asInt());
-		superAuxDestination.sethSize(jsonNode.get("VSize").asInt());
-		JsonNode arrayNode = jsonNode.get("AuxDestCollection");
+		superAuxDestination.setHdiMention(jsonNode.get(BarcoE2Constant.H_DIMENTION).asInt());
+		superAuxDestination.setVdiMention(jsonNode.get(BarcoE2Constant.V_DIMENTION).asInt());
+		superAuxDestination.sethSize(jsonNode.get(BarcoE2Constant.H_SIZE).asInt());
+		superAuxDestination.sethSize(jsonNode.get(BarcoE2Constant.V_SIZE).asInt());
+		JsonNode arrayNode = jsonNode.get(BarcoE2Constant.AUX_DEST_COLLECTION);
 		List<AuxDestination> auxDestinationList = new ArrayList<>();
 		for (int i = 0; i < arrayNode.size(); i++) {
 			String name = arrayNode.get(i).get(BarcoE2Constant.NAME).asText();

@@ -12,8 +12,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @since 1.0.0
  */
 public class PowerStatusDTO {
+
 	@JsonProperty("PowerSupply1Status")
 	private int powerSupply1Status;
+
 	@JsonProperty("PowerSupply2Status")
 	private int powerSupply2Status;
 

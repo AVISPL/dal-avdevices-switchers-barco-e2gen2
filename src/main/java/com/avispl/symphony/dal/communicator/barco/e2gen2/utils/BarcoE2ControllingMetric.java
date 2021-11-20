@@ -10,6 +10,7 @@ package com.avispl.symphony.dal.communicator.barco.e2gen2.utils;
  * @since 1.0.0
  */
 public enum BarcoE2ControllingMetric {
+
 	PRESETS_LAST_CALLED_PRESET("Presets#LastCalledPreset"), PRESETS_PRESET("Presets#Preset"),
 	PRESETS_PRESET_ACTIVATE("Presets#PresetActivate"),SCREEN_DESTINATION("ScreenDestination"),
 	AUX_DESTINATION("AuxDestination"), SUPER_SCREEN_DESTINATION("SuperDestination"),
@@ -17,6 +18,11 @@ public enum BarcoE2ControllingMetric {
 
 	private final String name;
 
+	/**
+	 * BarcoE2ControllingMetric with arg constructor
+	 *
+	 * @param name name of the metric
+	 */
 	BarcoE2ControllingMetric(String name) {
 		this.name = name;
 	}
@@ -30,9 +36,14 @@ public enum BarcoE2ControllingMetric {
 		return name;
 	}
 
+	/**
+	 * Get name of metric from BarcoE2ControllingMetric
+	 *
+	 * @param name name of metric
+	 * @return Enum of BarcoE2ControllingMetric
+	 */
 	public static BarcoE2ControllingMetric getByName(String name) {
-		for (BarcoE2ControllingMetric metric: BarcoE2ControllingMetric.values()
-		) {
+		for (BarcoE2ControllingMetric metric: BarcoE2ControllingMetric.values()) {
 			if (metric.getName().equals(name)) {
 				return metric;
 			}

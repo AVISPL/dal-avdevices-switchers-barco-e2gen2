@@ -12,11 +12,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @since 1.0.0
  */
 public class AuxDestination {
+
 	@JsonProperty("id")
 	private int id;
+
 	@JsonProperty("Name")
 	private String name;
 
+	/**
+	 * AuxDestination with args constructor
+	 *
+	 * @param id id of aux destination
+	 * @param name name of aux destination
+	 */
 	public AuxDestination(int id, String name) {
 		this.id = id;
 		this.name = name;

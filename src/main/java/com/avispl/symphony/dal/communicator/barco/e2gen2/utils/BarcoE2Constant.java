@@ -10,6 +10,7 @@ package com.avispl.symphony.dal.communicator.barco.e2gen2.utils;
  * @since 1.0.0
  */
 public final class BarcoE2Constant {
+
 	public static final String SYSTEM = "System";
 	public static final String RESULT = "result";
 	public static final String RESPONSE = "response";
@@ -42,11 +43,11 @@ public final class BarcoE2Constant {
 	public static final int SHOW_ALL_DESTINATION = 0;
 	public static final String SUCCESS_STATUS = "successCode";
 
-
 	// Preset
 	public static final String PRESET_NAME = "presetName";
 	public static final int NO_RECALLED_PRESET = -1;
 	public static final int LIST_ALL_DESTINATION_FOR_PRESET = -1;
+
 	// Methods
 	public static final String METHOD_LIST_DESTINATIONS_FOR_PRESET = "listDestinationsForPreset";
 	public static final String METHOD_LAST_RECALLED_PRESET = "lastRecalledPreset";
@@ -60,12 +61,21 @@ public final class BarcoE2Constant {
 	public static final String METHOD_CHANGE_AUX_CONTENT = "changeAuxContent";
 	public static final String METHOD_LIST_SUPER_DEST_CONTENT = "listSuperDestContent";
 	public static final String METHOD_LIST_SUPER_AUX_CONTENT = "listSuperAuxContent";
+
 	// Destinations
 	public static final String DESTINATION_STATUS = "Status";
 	public static final String DESTINATION_MIXED = "Mixed";
 	public static final int DESTINATION_AUX_TYPE = 2;
-	public static final String METHOD_LIST_PRESET = "listPresets";
 	public static final String DASH = "-";
 	public static final String COMMA = ",";
+	public static final String DEFAULT_JSONRPC = "jsonrpc";
+	public static final int DEFAULT_RPC_ID = 1234;
+	public static final String H_DIMENTION = "HDimention";
+	public static final String V_DIMENTION = "VDimention";
+	public static final String H_SIZE = "HSize";
+	public static final String V_SIZE = "VSize";
+	public static final String AUX_DEST_COLLECTION = "AuxDestCollection";
+	public static final String GROUP_HASH_TAG_MEMBER = "%s#%s";
+	public static final String GROUP_DEST_HASH_TAG_DEST_NAME_COLON_MEMBER = "%s#%s-%s";
 }
 

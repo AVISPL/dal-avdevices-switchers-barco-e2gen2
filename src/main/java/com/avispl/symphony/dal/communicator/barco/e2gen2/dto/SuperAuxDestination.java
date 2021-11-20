@@ -17,12 +17,19 @@ import com.avispl.symphony.dal.communicator.barco.e2gen2.utils.SuperAuxDestinati
  */
 @JsonDeserialize(using = SuperAuxDestinationDeserializer.class)
 public class SuperAuxDestination {
+
 	private int id;
+
 	private String name;
+
 	private int hdiMention;
+
 	private int vdiMention;
+
 	private int hSize;
+
 	private int vSize;
+
 	private List<AuxDestination> auxDestinationList;
 
 	/**

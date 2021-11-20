@@ -21,6 +21,7 @@ public enum BarcoE2MonitoringMetric {
 	CONNECTED_UNITS("DeviceInformation#ConnectedUnits"),
 	POWER_SUPPLY_1_STATUS("PowerStatus#PowerSupply1Status"),
 	POWER_SUPPLY_2_STATUS("PowerStatus#PowerSupply2Status");
+
 	private final String name;
 
 	/**

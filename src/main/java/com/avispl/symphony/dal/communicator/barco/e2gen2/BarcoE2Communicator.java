@@ -68,9 +68,19 @@ import com.avispl.symphony.dal.communicator.barco.e2gen2.utils.PowerStatus;
  */
 public class BarcoE2Communicator extends RestCommunicator implements Monitorable, Controller {
 
+	/**
+	 * Routing control: class to store properties of source
+	 */
+	class SourceProperties {
+		String currentSourceName = BarcoE2Constant.DOUBLE_QUOTES;
+		int numberOfSource = 0;
+	}
+
 	private ExtendedStatistics localExtendedStatistics;
 	private String lastPresetName = BarcoE2Constant.DOUBLE_QUOTES;
 	private boolean isFirstTimeMonitor = true;
+	private final ObjectMapper objectMapper = new ObjectMapper();
+
 	private String listSuperScreenDestId;
 	private String listSuperAuxDestId;
 
@@ -111,109 +121,9 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	}
 
 	/**
-	 * This method is called by Symphony to get the list of statistics to be displayed
 	 * {@inheritDoc}
-	 *
-	 * @return List<Statistics> This returns the list of statistics
-	 */
-	@Override
-	public List<Statistics> getMultipleStatistics() throws Exception {
-		if (logger.isDebugEnabled()) {
-			logger.debug(String.format("Perform doPost() at host %s with port %s", this.host, this.getPort()));
-		}
-		Map<String, String> statistics = new HashMap<>();
-		List<AdvancedControllableProperty> controls = new ArrayList<>();
-		if (localExtendedStatistics == null) {
-			localExtendedStatistics = new ExtendedStatistics();
-		} else {
-			statistics = localExtendedStatistics.getStatistics();
-		}
-		initializeData(statistics, controls);
-		localExtendedStatistics.setStatistics(statistics);
-		localExtendedStatistics.setControllableProperties(controls);
-		return Collections.singletonList(localExtendedStatistics);
-	}
-
-	/**
-	 * Initialize monitoring/controlling data
-	 *
-	 * @param statistics Map of statistics
-	 * @param controls List of AdvancedControllableProperty that need to be controlled
-	 */
-	private void initializeData(Map<String, String> statistics, List<AdvancedControllableProperty> controls) throws Exception {
-		if (isFirstTimeMonitor) {
-			getDeviceInformation(statistics);
-			isFirstTimeMonitor = false;
-		}
-		getPresetFeedBack(statistics, controls);
-		getRoutingControl(true, statistics, controls);
-		getRoutingControl(false, statistics, controls);
-		getSuperRoutingControl(false, statistics, controls);
-		// TODO: routing monitoring/controlling for super destination
-	}
-
-	/**
-	 * Generate RpcRequest DTO
-	 *
-	 * @param method Rpc method
-	 * @param params Map of parameters
-	 * @return This returns RpcRequest DTO
-	 */
-	private RpcRequest rpcRequestBody(String method, Map<Object, Object> params) {
-		RpcRequest rpcRequest = new RpcRequest();
-		rpcRequest.setMethod(method);
-		rpcRequest.setParams(params);
-		return rpcRequest;
-	}
-
-	/**
-	 * Call post request on the device to get RpcResponse DTO
-	 *
-	 * @param method String name of the method
-	 * @param param Map of params
-	 * @return JsonNode returns the JsonNode of given object
-	 * @throws Exception Throw exception when failed to call post request, get data from device
-	 */
-	protected JsonNode getByMethod(String method, Map<Object, Object> param) throws Exception {
-		RpcResponse rpcResponse;
-		try {
-			rpcResponse = this.doPost(BarcoE2Constant.DOUBLE_QUOTES, rpcRequestBody(method, param), RpcResponse.class);
-			if (rpcResponse == null || rpcResponse.getSuccessCode() != 0) {
-				throw new ResourceNotReachableException("doPost success but failed to get data from the device");
-			}
-			JsonNode response = rpcResponse.getResponse();
-			if (response != null && !NullNode.instance.equals(response) && !response.isEmpty()) {
-				return response;
-			}
-			return new ObjectMapper().valueToTree(rpcResponse);
-		} catch (Exception e) {
-			if (logger.isWarnEnabled()) {
-				logger.warn(String.format("Failed to doPost for method %s", method));
-			}
-			throw e;
-		}
-	}
-
-	/**
-	 * Map a JsonNode to DTO
-	 *
-	 * @param jsonNode input jsonNode that need to be converted
-	 * @return This returns the DTO of given Object.
-	 */
-	private <T> Object jsonNodeToDTO(JsonNode jsonNode, Class<T> tClass) throws JsonProcessingException {
-		ObjectMapper jsonObjectMapper = new ObjectMapper();
-		try {
-			return jsonObjectMapper.treeToValue(jsonNode, tClass);
-		} catch (JsonProcessingException e) {
-			logger.error("Failed to convert jsonNode to DTO");
-			throw e;
-		}
-	}
-
-	/**
 	 * BarcoE2Communicator doesn't require authentication
 	 *
-	 * {@inheritDoc}
 	 */
 	@Override
 	protected void authenticate() {
@@ -221,12 +131,12 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	}
 
 	/**
+	 * {@inheritDoc}
 	 * Properties that need to be controlled:
 	 * - Routing Control
 	 * - Preset Control
 	 *
 	 * @param controllableProperty control property that will be controlled
-	 * {@inheritDoc}
 	 */
 	@Override
 	public void controlProperty(ControllableProperty controllableProperty) {
@@ -261,6 +171,122 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 					logger.warn(String.format("Operation %s with value %s is not supported.", property, value));
 				}
 				throw new IllegalArgumentException(String.format("Operation %s with value %s is not supported.", property, value));
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * Control properties
+	 *
+	 * @param list list of control properties that will be controlled
+	 */
+	@Override
+	public void controlProperties(List<ControllableProperty> list) {
+		if (CollectionUtils.isEmpty(list)) {
+			throw new IllegalArgumentException("Controllable properties cannot be null or empty");
+		}
+		for (ControllableProperty controllableProperty : list) {
+			controlProperty(controllableProperty);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * This method is called by Symphony to get the list of statistics to be displayed
+	 *
+	 * @return List<Statistics> This returns the list of statistics
+	 * @throws Exception Throw exception when failed to get info from device
+	 */
+	@Override
+	public List<Statistics> getMultipleStatistics() throws Exception {
+		if (logger.isDebugEnabled()) {
+			logger.debug(String.format("Perform doPost() at host %s with port %s", this.host, this.getPort()));
+		}
+		Map<String, String> statistics = new HashMap<>();
+		List<AdvancedControllableProperty> controls = new ArrayList<>();
+		if (localExtendedStatistics == null) {
+			localExtendedStatistics = new ExtendedStatistics();
+		} else {
+			statistics = localExtendedStatistics.getStatistics();
+		}
+		initializeData(statistics, controls);
+		localExtendedStatistics.setStatistics(statistics);
+		localExtendedStatistics.setControllableProperties(controls);
+		return Collections.singletonList(localExtendedStatistics);
+	}
+
+	/**
+	 * Call post request on the device to get RpcResponse DTO
+	 *
+	 * @param method String name of the method
+	 * @param param Map of params
+	 * @return JsonNode returns the JsonNode of given object
+	 * @throws Exception Throw exception when failed to call post request, get data from device
+	 */
+	protected JsonNode getByMethod(String method, Map<Object, Object> param) throws Exception {
+		RpcResponse rpcResponse;
+		try {
+			rpcResponse = this.doPost(BarcoE2Constant.DOUBLE_QUOTES, rpcRequestBody(method, param), RpcResponse.class);
+			if (rpcResponse == null || rpcResponse.getSuccessCode() != 0) {
+				throw new ResourceNotReachableException("doPost success but failed to get data from the device");
+			}
+			JsonNode response = rpcResponse.getResponse();
+			if (response != null && !NullNode.instance.equals(response) && !response.isEmpty()) {
+				return response;
+			}
+			return objectMapper.valueToTree(rpcResponse);
+		} catch (Exception e) {
+			logger.error(String.format("Failed to doPost for method %s", method));
+			throw e;
+		}
+	}
+
+	/**
+	 * Initialize monitoring/controlling data
+	 *
+	 * @param statistics Map of statistics
+	 * @param controls List of AdvancedControllableProperty that need to be controlled
+	 * @throws Exception Throw exception when failed to get preset/routing monitoring and controlling properties
+	 */
+	private void initializeData(Map<String, String> statistics, List<AdvancedControllableProperty> controls) throws Exception {
+		if (isFirstTimeMonitor) {
+			getDeviceInformation(statistics);
+			isFirstTimeMonitor = false;
+		}
+		getPresetFeedBack(statistics, controls);
+		getRoutingControl(true, statistics, controls);
+		getRoutingControl(false, statistics, controls);
+		getSuperRoutingControl(false, statistics, controls);
+		// TODO: routing monitoring/controlling for super destination
+	}
+
+	/**
+	 * Generate RpcRequest DTO
+	 *
+	 * @param method Rpc method
+	 * @param params Map of parameters
+	 * @return This returns RpcRequest DTO
+	 */
+	private RpcRequest rpcRequestBody(String method, Map<Object, Object> params) {
+		RpcRequest rpcRequest = new RpcRequest();
+		rpcRequest.setMethod(method);
+		rpcRequest.setParams(params);
+		return rpcRequest;
+	}
+
+	/**
+	 * Map a JsonNode to DTO
+	 *
+	 * @param jsonNode input jsonNode that need to be converted
+	 * @param tClass Class that will be converted to
+	 * @return This returns the DTO of given Object.
+	 */
+	private <T> Object jsonNodeToDTO(JsonNode jsonNode, Class<T> tClass) throws JsonProcessingException {
+		try {
+			return objectMapper.treeToValue(jsonNode, tClass);
+		} catch (JsonProcessingException e) {
+			logger.error("Failed to convert jsonNode to DTO");
+			throw e;
 		}
 	}
 
@@ -304,22 +330,6 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		if (logger.isDebugEnabled()) {
 			String debugString = result ? String.format("Activate %s success!", lastPresetName) : String.format("Activate %s fail!", lastPresetName);
 			logger.debug(debugString);
-		}
-	}
-
-	/**
-	 * Control properties
-	 *
-	 * @param list list of control properties that will be controlled
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void controlProperties(List<ControllableProperty> list) {
-		if (CollectionUtils.isEmpty(list)) {
-			throw new IllegalArgumentException("Controllable properties cannot be null or empty");
-		}
-		for (ControllableProperty controllableProperty : list) {
-			controlProperty(controllableProperty);
 		}
 	}
 
@@ -518,6 +528,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	 * @param stats Map of statistics
 	 * @param controls List of AdvancedControllableProperty
 	 * @param dropDownOptions List of dropdown options
+	 * @param activePresetResult Activate preset name
 	 */
 	private void populatePresetStatsAndControls(Map<String, String> stats, List<AdvancedControllableProperty> controls, List<String> dropDownOptions, String activePresetResult) {
 		if (dropDownOptions.isEmpty()) {
@@ -553,8 +564,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 			}
 			return result;
 		} catch (Exception e) {
-			logger.error("Failed to activate preset");
-			throw new CommandFailureException(this.getAddress(), "activatePreset", "Failed to activate preset");
+			throw new CommandFailureException(this.getAddress(), "activatePreset", "Failed to activate preset", e);
 		}
 	}
 
@@ -563,6 +573,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	 *
 	 * @param presetName name of the preset that need to be activated
 	 * @return boolean type indicates that preset is successfully activated.
+	 * @throws Exception Throw exception when failed to get JsonNode
 	 */
 	private boolean activatePreset(String presetName) throws Exception {
 		Map<Object, Object> param = new HashMap<>();
@@ -573,14 +584,6 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 			throw new CommandFailureException(this.getAddress(), "activatePreset", "Failed to activate preset");
 		}
 		return activatePresetResponse.get(BarcoE2Constant.SUCCESS_STATUS).asInt() == 0;
-	}
-
-	/**
-	 * Routing control: class to store properties of source
-	 */
-	class SourceProperties {
-		String currentSourceName = BarcoE2Constant.DOUBLE_QUOTES;
-		int numberOfSource = 0;
 	}
 
 	/**
@@ -649,6 +652,8 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	 * Routing control: Screen + Aux Destination
 	 *
 	 * @param isScreenDest True: "ScreenDestination", false: "AuxDestination"
+	 * @param controls List of AdvancedControllableProperty
+	 * @param stats Map of statistics
 	 * @throws Exception Throw exception if failed to get json node
 	 */
 	private void getRoutingControl(boolean isScreenDest, Map<String, String> stats, List<AdvancedControllableProperty> controls) throws Exception {
@@ -743,6 +748,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	 * Routing control: Get all sources of the device.
 	 *
 	 * @return A map contains source ids and source names.
+	 * @throws Exception Throw exception when failed to get JsonNode
 	 */
 	private Map<Integer, String> getListSource() throws Exception {
 		JsonNode response = getByMethod(BarcoE2Constant.METHOD_LIST_SOURCES, new HashMap<>());
@@ -761,7 +767,6 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		}
 		sourceIdAndSourceName.put(BarcoE2Constant.NO_RECALLED_PRESET, BarcoE2Constant.NONE);
 		return sourceIdAndSourceName;
-
 	}
 
 	/**
@@ -822,8 +827,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 			}
 			throw new CommandFailureException(this.getAddress(), "changeAuxContent", "Failed to call changeAuxContent");
 		} catch (Exception e) {
-			logger.error("Failed to assign source to super/aux destination");
-			throw new CommandFailureException(this.getAddress(), "changeAuxContent or changeSuperAuxContent", "Failed to assign source to this destination");
+			throw new CommandFailureException(this.getAddress(), "changeAuxContent or changeSuperAuxContent", "Failed to assign source to this destination", e);
 		}
 	}
 
@@ -849,10 +853,8 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 			try {
 				response = getSuperRoutingControlJsonNode(isSuperDest, String.valueOf(listDestId));
 			} catch (Exception e) {
-				logger.error("Input from adapter properties does not match the device's response");
-				throw new ResourceNotReachableException(String.format("ID %s not exist in the device", listDestId));
+				throw new ResourceNotReachableException(String.format("ID %s not exist in the device", listDestId), e);
 			}
-
 			if (response == null) {
 				stats.put(String.format(BarcoE2Constant.GROUP_DEST_HASH_TAG_DEST_NAME_COLON_MEMBER, methodName, BarcoE2Constant.NONE, BarcoE2Constant.NONE), BarcoE2Constant.NONE);
 				return;
@@ -898,8 +900,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 				// stream the string List and convert to integer List
 				return resultList.stream().map(Integer::parseInt).collect(Collectors.toList());
 			} catch (Exception e) {
-				logger.error(e);
-				throw new ResourceConflictException("Failed to parse the string to integer, input from adapter properties is wrong");
+				throw new ResourceConflictException("Failed to parse the string to integer, input from adapter properties is wrong", e);
 			}
 		}
 		return Collections.emptyList();

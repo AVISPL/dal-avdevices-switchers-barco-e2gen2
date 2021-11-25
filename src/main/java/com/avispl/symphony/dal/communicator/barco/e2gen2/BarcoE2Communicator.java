@@ -123,7 +123,6 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	/**
 	 * {@inheritDoc}
 	 * BarcoE2Communicator doesn't require authentication
-	 *
 	 */
 	@Override
 	protected void authenticate() {
@@ -225,20 +224,15 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	 */
 	protected JsonNode getByMethod(String method, Map<Object, Object> param) throws Exception {
 		RpcResponse rpcResponse;
-		try {
-			rpcResponse = this.doPost(BarcoE2Constant.DOUBLE_QUOTES, rpcRequestBody(method, param), RpcResponse.class);
-			if (rpcResponse == null || rpcResponse.getSuccessCode() != 0) {
-				throw new ResourceNotReachableException("doPost success but failed to get data from the device");
-			}
-			JsonNode response = rpcResponse.getResponse();
-			if (response != null && !NullNode.instance.equals(response) && !response.isEmpty()) {
-				return response;
-			}
-			return objectMapper.valueToTree(rpcResponse);
-		} catch (Exception e) {
-			logger.error(String.format("Failed to doPost for method %s", method));
-			throw e;
+		rpcResponse = this.doPost(BarcoE2Constant.DOUBLE_QUOTES, rpcRequestBody(method, param), RpcResponse.class);
+		if (rpcResponse == null || rpcResponse.getSuccessCode() != 0) {
+			throw new ResourceNotReachableException("doPost success but failed to get data from the device");
 		}
+		JsonNode response = rpcResponse.getResponse();
+		if (response != null && !NullNode.instance.equals(response) && !response.isEmpty()) {
+			return response;
+		}
+		return objectMapper.valueToTree(rpcResponse);
 	}
 
 	/**
@@ -282,12 +276,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	 * @return This returns the DTO of given Object.
 	 */
 	private <T> Object jsonNodeToDTO(JsonNode jsonNode, Class<T> tClass) throws JsonProcessingException {
-		try {
-			return objectMapper.treeToValue(jsonNode, tClass);
-		} catch (JsonProcessingException e) {
-			logger.error("Failed to convert jsonNode to DTO");
-			throw e;
-		}
+		return objectMapper.treeToValue(jsonNode, tClass);
 	}
 
 	/**
@@ -343,7 +332,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 			String[] splitString = propertyValue.split(BarcoE2Constant.DASH);
 			return splitString[1];
 		} catch (Exception e) {
-			throw new ResourceConflictException("Failed to split the aux destination name from superAuxDest-auxDest");
+			throw new IllegalArgumentException("Failed to split the aux destination name from superAuxDest-auxDest");
 		}
 	}
 

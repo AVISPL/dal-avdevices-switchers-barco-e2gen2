@@ -1413,6 +1413,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 			return;
 		}
 		List<AuxDestination> auxDestinationList = superAuxDestination.getAuxDestinationList();
+		int numberOfSourceInSuperAuxDest = 0;
 		for (AuxDestination auxDestination : auxDestinationList) {
 			// STEP 2 update number of source and number and current assigned source name
 			SourceProperties sourceProperties = new SourceProperties();
@@ -1424,6 +1425,10 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 			}
 			controls.add(createDropdown(String.format(BarcoE2Constant.GROUP_DEST_HASH_TAG_DEST_NAME_COLON_MEMBER, methodName, superAuxDestination.getName(), auxDestination.getName()),
 					sourceProperties.currentSourceName, sourceList));
+			numberOfSourceInSuperAuxDest += sourceProperties.numberOfSource;
+		}
+		if (numberOfSourceInSuperAuxDest > 1) {
+			stats.put(String.format("%s#%s%s", methodName, superAuxDestination.getName(), BarcoE2Constant.DESTINATION_STATUS), BarcoE2Constant.DESTINATION_MIXED);
 		}
 	}
 
@@ -1466,6 +1471,30 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		if (Objects.equals(sourceProperties.currentSourceName, BarcoE2Constant.DOUBLE_QUOTES)) {
 			sourceProperties.currentSourceName = BarcoE2Constant.NONE;
 		}
+		int numberOfSource = getNumberOfSourceOfSuperDest(superDestination);
+		if (numberOfSource > 1) {
+			stats.put(String.format("%s#%s%s", methodName, superDestination.getName(), BarcoE2Constant.DESTINATION_STATUS), BarcoE2Constant.DESTINATION_MIXED);
+		}
+	}
+
+	/**
+	 * Get number of source for super destination
+	 *
+	 * @param superDestination Super Destination DTO
+	 * @return This returns number of sources
+	 * @throws Exception Throw exception when fail to get screen dest content
+	 */
+	private int getNumberOfSourceOfSuperDest(SuperDestination superDestination) throws Exception {
+		int numberOfSource = 0;
+		for (int i = 0; i < superDestination.getListScreenDestName().size(); i++) {
+			SourceProperties sourceProperties2 = new SourceProperties();
+			String currentName = superDestination.getListScreenDestName().get(i);
+			int currentDestId = getCurrentScreenDestId(currentName);
+			JsonNode currentScreenDestContent = getScreenDestContent(currentDestId);
+			updateSourcePropertiesValue(true, currentScreenDestContent, sourceProperties2);
+			numberOfSource += sourceProperties2.numberOfSource;
+		}
+		return numberOfSource;
 	}
 
 	/**

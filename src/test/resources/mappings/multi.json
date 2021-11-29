@@ -891,6 +891,24 @@
         "method": "POST",
         "bodyPatterns": [
           {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listContent\",\"params\":{\"id\" : 1}, \"id\": 1234}"
+          }
+        ],
+        "url": "/expect-exception"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"id\":0,\"Name\":\"Site Screen\",\"IsActive\":1,\"BGLyr\":[{\"id\":0,\"LastBGSourceIndex\":-1,\"BGShowMatte\":1,\"BGColor\":{\"id\":0,\"Red\":0,\"Green\":0,\"Blue\":0}},{\"id\":1,\"LastBGSourceIndex\":-1,\"BGShowMatte\":1,\"BGColor\":{\"id\":0,\"Red\":0,\"Green\":0,\"Blue\":0}}],\"Layers\":[{\"id\":0,\"Name\":\"Layer1-A\",\"LastSrcIdx\":0,\"PvwMode\":0,\"PgmMode\":1,\"LinkLayerId\":-1,\"LinkDestId\":-1,\"Capacity\":1,\"PvwZOrder\":0,\"PgmZOrder\":0,\"Freeze\":0,\"ScalingMode\":2,\"Window\":[{\"HPos\":993,\"VPos\":241,\"HSize\":928,\"VSize\":522},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Source\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Mask\":[{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0},{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0}]},{\"id\":1,\"Name\":\"Layer1-B\",\"LastSrcIdx\":0,\"PvwMode\":1,\"PgmMode\":0,\"LinkLayerId\":-1,\"LinkDestId\":-1,\"Capacity\":1,\"PvwZOrder\":0,\"PgmZOrder\":0,\"Freeze\":0,\"ScalingMode\":2,\"Window\":[{\"HPos\":993,\"VPos\":241,\"HSize\":928,\"VSize\":522},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Source\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Mask\":[{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0},{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0}]},{\"id\":2,\"Name\":\"Layer2-A\",\"LastSrcIdx\":-1,\"PvwMode\":0,\"PgmMode\":0,\"LinkLayerId\":-1,\"LinkDestId\":-1,\"Capacity\":1,\"PvwZOrder\":2,\"PgmZOrder\":2,\"Freeze\":0,\"ScalingMode\":2,\"Window\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Source\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Mask\":[{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0},{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0}]},{\"id\":3,\"Name\":\"Layer2-B\",\"LastSrcIdx\":-1,\"PvwMode\":0,\"PgmMode\":0,\"LinkLayerId\":-1,\"LinkDestId\":-1,\"Capacity\":1,\"PvwZOrder\":2,\"PgmZOrder\":2,\"Freeze\":0,\"ScalingMode\":2,\"Window\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Source\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Mask\":[{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0},{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0}]},{\"id\":4,\"Name\":\"Layer3-A\",\"LastSrcIdx\":1,\"PvwMode\":0,\"PgmMode\":1,\"LinkLayerId\":0,\"LinkDestId\":0,\"Capacity\":1,\"PvwZOrder\":4,\"PgmZOrder\":4,\"Freeze\":0,\"ScalingMode\":2,\"Window\":[{\"HPos\":4,\"VPos\":246,\"HSize\":928,\"VSize\":522},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Source\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Mask\":[{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0},{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0}]},{\"id\":5,\"Name\":\"Layer3-B\",\"LastSrcIdx\":1,\"PvwMode\":1,\"PgmMode\":0,\"LinkLayerId\":1,\"LinkDestId\":0,\"Capacity\":1,\"PvwZOrder\":4,\"PgmZOrder\":4,\"Freeze\":0,\"ScalingMode\":2,\"Window\":[{\"HPos\":4,\"VPos\":246,\"HSize\":928,\"VSize\":522},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Source\":[{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080},{\"HPos\":0,\"VPos\":0,\"HSize\":1920,\"VSize\":1080}],\"Mask\":[{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0},{\"id\":0,\"Top\":0,\"Left\":0,\"Right\":0,\"Bottom\":0}]}],\"Transition\":[{\"id\":0,\"TransTime\":30,\"TransPos\":0,\"ArmMode\":1},{\"id\":1,\"TransTime\":30,\"TransPos\":0,\"ArmMode\":0}],\"OutputCfg\":[{\"id\":1,\"Name\":\"Site projector\",\"OutputAOI\":[{\"id\":0,\"TestPattern\":[{\"id\":0,\"TestPatternMode\":0}]}]}]}},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
             "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"getFrameSettings\",\"params\":{}, \"id\": 1234}"
           }
         ],

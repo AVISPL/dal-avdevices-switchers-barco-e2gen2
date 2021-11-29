@@ -55,6 +55,7 @@ class BarcoE2CommunicatorTest {
 		barcoE2Communicator.setHost(HOST_NAME);
 		barcoE2Communicator.setContentType("application/json");
 		barcoE2Communicator.setAuthenticationScheme(HttpCommunicator.AuthenticationScheme.None);
+		barcoE2Communicator.setListSuperScreenDestId("0");
 		barcoE2Communicator.setListSuperAuxDestId("0,1");
 		barcoE2Communicator.init();
 	}
@@ -72,7 +73,7 @@ class BarcoE2CommunicatorTest {
 	 */
 	@Test
 	void deviceInformationAndPowerSupplyTest() throws Exception {
-		List<Statistics> statistics = barcoE2Communicator.getMultipleStatistics();
+				List<Statistics> statistics = barcoE2Communicator.getMultipleStatistics();
 		Assertions.assertNotNull(statistics.get(0));
 		assertEquals(1, statistics.size());
 		assertEquals("08:00:27:d9:48:fd", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2MonitoringMetric.MAC_ADDRESS.getName()));
@@ -80,11 +81,35 @@ class BarcoE2CommunicatorTest {
 		assertEquals("2", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2MonitoringMetric.CONNECTED_UNITS.getName()));
 		assertEquals("9.0.4878", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2MonitoringMetric.FIRMWARE_VERSION.getName()));
 		assertEquals("192.168.000.175", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2MonitoringMetric.IP_ADDRESS.getName()));
-		assertEquals("E2", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2MonitoringMetric.HOST_NAME.getName()));
-		assertEquals("E2", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2MonitoringMetric.DEVICE_NAME.getName()));
+		assertEquals("System1", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2MonitoringMetric.HOST_NAME.getName()));
+		assertEquals("System1", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2MonitoringMetric.DEVICE_NAME.getName()));
 		assertEquals("E2", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2MonitoringMetric.DEVICE_MODEL.getName()));
 		assertEquals("OK", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2MonitoringMetric.POWER_SUPPLY_1_STATUS.getName()));
 		assertEquals("OK", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2MonitoringMetric.POWER_SUPPLY_2_STATUS.getName()));
+	}
+
+	/**
+	 * Test method for {@link BarcoE2Communicator#getMultipleStatistics()}, get device information
+	 *	None when failed to get device information
+	 * @throws Exception Throw exceptions when cannot call request on the device
+	 */
+	@Test
+	void deviceInformationWithNone() throws Exception {
+		barcoE2Communicator.destroy();
+		barcoE2Communicator.setBaseUri("/null-device-information-power-status");
+		barcoE2Communicator.init();
+		List<Statistics> statistics = barcoE2Communicator.getMultipleStatistics();
+		Assertions.assertNotNull(statistics.get(0));
+		assertEquals("None", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2MonitoringMetric.MAC_ADDRESS.getName()));
+		assertEquals("None", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2MonitoringMetric.DEVICE_ID.getName()));
+		assertEquals("None", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2MonitoringMetric.CONNECTED_UNITS.getName()));
+		assertEquals("None", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2MonitoringMetric.FIRMWARE_VERSION.getName()));
+		assertEquals("None", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2MonitoringMetric.IP_ADDRESS.getName()));
+		assertEquals("None", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2MonitoringMetric.HOST_NAME.getName()));
+		assertEquals("None", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2MonitoringMetric.DEVICE_NAME.getName()));
+		assertEquals("None", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2MonitoringMetric.DEVICE_MODEL.getName()));
+		assertEquals("None", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2MonitoringMetric.POWER_SUPPLY_1_STATUS.getName()));
+		assertEquals("None", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2MonitoringMetric.POWER_SUPPLY_2_STATUS.getName()));
 	}
 
 	/**
@@ -119,7 +144,6 @@ class BarcoE2CommunicatorTest {
 	/**
 	 * Test method for Preset Control
 	 * No active preset in the device
-	 *
 	 */
 	@Test
 	void testForNoActivePreset() throws Exception {
@@ -133,19 +157,6 @@ class BarcoE2CommunicatorTest {
 
 	/**
 	 * Test method for JsonNode
-	 *  Exception when success code != 0
-	 * @throws Exception
-	 */
-	@Test
-	void testGetJsonNodeWithException() throws Exception {
-		barcoE2Communicator.destroy();
-		barcoE2Communicator.setBaseUri("/expect-exception");
-		barcoE2Communicator.init();
-		assertThrows(ResourceNotReachableException.class, () -> barcoE2Communicator.getByMethod("exceptionMethod", new HashMap<>()), "Expect exception here due to success code != 0");
-	}
-
-	/**
-	 * Test method for JsonNode
 	 *  Exception when response is null
 	 *
 	 * @throws Exception
@@ -155,7 +166,7 @@ class BarcoE2CommunicatorTest {
 		barcoE2Communicator.destroy();
 		barcoE2Communicator.setBaseUri("/expect-exception");
 		barcoE2Communicator.init();
-		assertThrows(ResourceNotReachableException.class, () -> barcoE2Communicator.getByMethod("nullResponseMethod", new HashMap<>()), "Expect exception here due to null response");
+		assertThrows(ResourceNotReachableException.class, () -> barcoE2Communicator.requestByMethod("nullResponseMethod", new HashMap<>()), "Expect exception here due to null response");
 	}
 
 	/**
@@ -169,6 +180,6 @@ class BarcoE2CommunicatorTest {
 		barcoE2Communicator.destroy();
 		barcoE2Communicator.setBaseUri("/expect-exception");
 		barcoE2Communicator.init();
-		assertThrows(Exception.class, () -> barcoE2Communicator.getByMethod("notExistedMethod", new HashMap<>()), "Expect exception doPost on not existed method");
+		assertThrows(Exception.class, () -> barcoE2Communicator.requestByMethod("notExistedMethod", new HashMap<>()), "Expect exception doPost on not existed method");
 	}
 }

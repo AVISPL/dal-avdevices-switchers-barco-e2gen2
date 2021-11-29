@@ -12,7 +12,7 @@ package com.avispl.symphony.dal.communicator.barco.e2gen2.utils;
 public enum BarcoE2ControllingMetric {
 
 	PRESETS_LAST_CALLED_PRESET("Presets#LastCalledPreset"), PRESETS_PRESET("Presets#Preset"),
-	PRESETS_PRESET_ACTIVATE("Presets#PresetActivate"),SCREEN_DESTINATION("ScreenDestination"),
+	PRESETS_PRESET_ACTIVATE("Presets#PresetActivate"), SCREEN_DESTINATION("ScreenDestination"),
 	AUX_DESTINATION("AuxDestination"), SUPER_SCREEN_DESTINATION("SuperDestination"),
 	SUPER_AUX_DESTINATION("SuperAuxDestination");
 

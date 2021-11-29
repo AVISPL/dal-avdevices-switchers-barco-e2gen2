@@ -45,19 +45,22 @@ class BarcoE2CommunicatorControlTest {
 	@BeforeEach
 	public void init() throws Exception {
 		barcoE2Communicator.setTrustAllCertificates(true);
-		barcoE2Communicator.setTimeout(2000);
+		barcoE2Communicator.setTimeout(10000);
 		barcoE2Communicator.setProtocol(PROTOCOL);
 		barcoE2Communicator.setPort(HTTP_PORT);
 		barcoE2Communicator.setHost(HOST_NAME);
 		barcoE2Communicator.setContentType("application/json");
 		barcoE2Communicator.setAuthenticationScheme(HttpCommunicator.AuthenticationScheme.None);
-		barcoE2Communicator.setListSuperAuxDestId("0,1");
+		barcoE2Communicator.setListSuperScreenDestId("0");
+		barcoE2Communicator.setListSuperAuxDestId("0");
 		barcoE2Communicator.init();
 	}
+
 	@AfterEach
 	public void destroy() {
 		barcoE2Communicator.destroy();
 	}
+
 	/**
 	 * Test method for Preset Control
 	 * Case 1: Using the default value( Last Recalled Preset value) from the dropdown list, then clicked on "Activate on Program"
@@ -75,7 +78,7 @@ class BarcoE2CommunicatorControlTest {
 		Map<Object, Object> param = new HashMap<>();
 		param.put(BarcoE2Constant.PRESET_NAME, "Screen+Super");
 		param.put(BarcoE2Constant.TYPE, 1);
-		Mockito.verify(barcoE2Communicator,times(1)) .getByMethod(BarcoE2Constant.METHOD_ACTIVATE_PRESET, param);
+		Mockito.verify(barcoE2Communicator,times(1)).requestByMethod(BarcoE2Constant.METHOD_ACTIVATE_PRESET, param);
 	}
 
 	/**
@@ -99,7 +102,7 @@ class BarcoE2CommunicatorControlTest {
 		Map<Object, Object> param = new HashMap<>();
 		param.put(BarcoE2Constant.PRESET_NAME, "Screen+Super");
 		param.put(BarcoE2Constant.TYPE, 1);
-		Mockito.verify(barcoE2Communicator,times(1)) .getByMethod(BarcoE2Constant.METHOD_ACTIVATE_PRESET, param);
+		Mockito.verify(barcoE2Communicator,times(1)).requestByMethod(BarcoE2Constant.METHOD_ACTIVATE_PRESET, param);
 	}
 
 	/**
@@ -119,7 +122,7 @@ class BarcoE2CommunicatorControlTest {
 		Map<Object, Object> params = new HashMap<>();
 		params.put(BarcoE2Constant.ID, 0);
 		params.put(BarcoE2Constant.PGM_LAST_SRC_INDEX, 0);
-		Mockito.verify(barcoE2Communicator,times(1)) .getByMethod(BarcoE2Constant.METHOD_CHANGE_AUX_CONTENT, params);
+		Mockito.verify(barcoE2Communicator,times(1)).requestByMethod(BarcoE2Constant.METHOD_CHANGE_AUX_CONTENT, params);
 	}
 
 	/**
@@ -139,6 +142,39 @@ class BarcoE2CommunicatorControlTest {
 		Map<Object, Object> params = new HashMap<>();
 		params.put(BarcoE2Constant.ID, 0);
 		params.put(BarcoE2Constant.PGM_LAST_SRC_INDEX, 1);
-		Mockito.verify(barcoE2Communicator,times(1)) .getByMethod(BarcoE2Constant.METHOD_CHANGE_AUX_CONTENT, params);
+		Mockito.verify(barcoE2Communicator,times(1)).requestByMethod(BarcoE2Constant.METHOD_CHANGE_AUX_CONTENT, params);
+	}
+
+	/**
+	 * Test method for Routing Control
+	 * 	Test assign source to aux destination
+	 *
+	 * @throws Exception Throw exception if failed to retrieve statistics or controls
+	 */
+	@Test
+	void testRoutingControlCaseScreenDest() throws Exception {
+		barcoE2Communicator.getMultipleStatistics();
+		ControllableProperty property = new ControllableProperty();
+		// Press the "Activate On Program" button.
+		property.setValue("CAM1-1");
+		property.setProperty(String.format("%s#%s", BarcoE2ControllingMetric.SCREEN_DESTINATION.getName(),"Main Screen"));
+		barcoE2Communicator.controlProperty(property);
+		Mockito.verify(barcoE2Communicator,times(1)).controlProperty(property);
+	}
+
+	/**
+	 * Test method for Routing Control
+	 * 	Test assign source to aux destination
+	 *
+	 * @throws Exception Throw exception if failed to retrieve statistics or controls
+	 */
+	@Test
+	void testRoutingControlCaseSuperScreenDest() throws Exception {
+		ControllableProperty property = new ControllableProperty();
+		// Press the "Activate On Program" button.
+		property.setValue("CAM1-1");
+		property.setProperty(String.format("%s#%s", BarcoE2ControllingMetric.SUPER_SCREEN_DESTINATION.getName(),"SuperDest1"));
+		barcoE2Communicator.controlProperty(property);
+		Mockito.verify(barcoE2Communicator,times(1)).controlProperty(property);
 	}
 }

@@ -57,6 +57,7 @@ public class SuperAuxDestinationDeserializer extends StdDeserializer<SuperAuxDes
 		superAuxDestination.setVdiMention(jsonNode.get(BarcoE2Constant.V_DIMENTION).asInt());
 		superAuxDestination.sethSize(jsonNode.get(BarcoE2Constant.H_SIZE).asInt());
 		superAuxDestination.sethSize(jsonNode.get(BarcoE2Constant.V_SIZE).asInt());
+
 		JsonNode arrayNode = jsonNode.get(BarcoE2Constant.AUX_DEST_COLLECTION);
 		List<AuxDestination> auxDestinationList = new ArrayList<>();
 		for (int i = 0; i < arrayNode.size(); i++) {

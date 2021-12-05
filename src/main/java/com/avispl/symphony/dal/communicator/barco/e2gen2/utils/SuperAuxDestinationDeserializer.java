@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
+import com.avispl.symphony.api.dal.error.ResourceNotReachableException;
 import com.avispl.symphony.dal.communicator.barco.e2gen2.dto.AuxDestination;
 import com.avispl.symphony.dal.communicator.barco.e2gen2.dto.SuperAuxDestination;
 
@@ -61,9 +62,15 @@ public class SuperAuxDestinationDeserializer extends StdDeserializer<SuperAuxDes
 		JsonNode arrayNode = jsonNode.get(BarcoE2Constant.AUX_DEST_COLLECTION);
 		List<AuxDestination> auxDestinationList = new ArrayList<>();
 		for (int i = 0; i < arrayNode.size(); i++) {
+			if (arrayNode.get(i) == null) {
+				continue;
+			}
 			String name = arrayNode.get(i).get(BarcoE2Constant.NAME).asText();
 			int id = arrayNode.get(i).get(BarcoE2Constant.ID).asInt();
 			auxDestinationList.add(new AuxDestination(id, name));
+		}
+		if (auxDestinationList.isEmpty()) {
+			throw new ResourceNotReachableException(String.format("Fail to get collection of screen destination in this super destination: %s", superAuxDestination.getName()));
 		}
 		superAuxDestination.setAuxDestinationList(auxDestinationList);
 		return superAuxDestination;

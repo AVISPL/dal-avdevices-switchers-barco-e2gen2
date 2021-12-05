@@ -122,6 +122,7 @@ class BarcoE2CommunicatorControlTest {
 		Map<Object, Object> params = new HashMap<>();
 		params.put(BarcoE2Constant.ID, 0);
 		params.put(BarcoE2Constant.PGM_LAST_SRC_INDEX, 0);
+		params.put(BarcoE2Constant.PVM_LAST_SRC_INDEX, 0);
 		Mockito.verify(barcoE2Communicator,times(1)).requestByMethod(BarcoE2Constant.METHOD_CHANGE_AUX_CONTENT, params);
 	}
 
@@ -142,6 +143,7 @@ class BarcoE2CommunicatorControlTest {
 		Map<Object, Object> params = new HashMap<>();
 		params.put(BarcoE2Constant.ID, 0);
 		params.put(BarcoE2Constant.PGM_LAST_SRC_INDEX, 1);
+		params.put(BarcoE2Constant.PVM_LAST_SRC_INDEX, 1);
 		Mockito.verify(barcoE2Communicator,times(1)).requestByMethod(BarcoE2Constant.METHOD_CHANGE_AUX_CONTENT, params);
 	}
 
@@ -170,6 +172,7 @@ class BarcoE2CommunicatorControlTest {
 	 */
 	@Test
 	void testRoutingControlCaseSuperScreenDest() throws Exception {
+		barcoE2Communicator.getMultipleStatistics();
 		ControllableProperty property = new ControllableProperty();
 		// Press the "Activate On Program" button.
 		property.setValue("CAM1-1");

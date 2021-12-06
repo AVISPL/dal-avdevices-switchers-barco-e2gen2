@@ -223,23 +223,20 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	 * Prepare meta data for the device
 	 */
 	private void prepareDeviceMetaData() throws Exception {
+		if (listSuperScreenDestId != null) {
+			listSuperDestId = handleListSuperId(true);
+		} else {
+			listSuperDestId = Collections.emptyList();
+		}
+		if (listSuperAuxDestId != null) {
+			listSuperAuxId = handleListSuperId(false);
+		} else {
+			listSuperAuxId = Collections.emptyList();
+		}
 		try {
 			sourceIdToNameMap = getSourceIdToSourceNameMap();
-			if (listSuperScreenDestId != null) {
-				listSuperDestId = handleListSuperId(true);
-			} else {
-				listSuperDestId = Collections.emptyList();
-			}
-			if (listSuperAuxDestId != null) {
-				listSuperAuxId = handleListSuperId(false);
-			} else {
-				listSuperAuxId = Collections.emptyList();
-			}
 			isFailRetrieveMetaData = false;
 		} catch (Exception e) {
-			if (e instanceof IllegalArgumentException) {
-				throw e;
-			}
 			logger.error("Fail to monitor and control routing part");
 			isFailRetrieveMetaData = true;
 		}
@@ -583,10 +580,10 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		Map<Object, Object> presetParam = new HashMap<>();
 		presetParam.put(BarcoE2Constant.ID, activePresetIndex);
 		JsonNode presetResponse = requestByMethod(BarcoE2Constant.METHOD_LIST_DESTINATIONS_FOR_PRESET, presetParam);
-		if (presetResponse == null) {
+		if (presetResponse == null || presetResponse.get(BarcoE2Constant.SUCCESS) == null) {
 			return BarcoE2Constant.NONE;
 		}
-		if (presetResponse.get(BarcoE2Constant.SUCCESS) != null && presetResponse.get(BarcoE2Constant.SUCCESS).asInt() != 0) {
+		if (presetResponse.get(BarcoE2Constant.SUCCESS).asInt() != 0) {
 			if (logger.isDebugEnabled() && response.get(BarcoE2Constant.RESPONSE) != null) {
 				logger.debug(response.get(BarcoE2Constant.RESPONSE));
 			}

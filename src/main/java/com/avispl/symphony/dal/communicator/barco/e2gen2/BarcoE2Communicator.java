@@ -767,7 +767,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		if (!listSourceIndexes.isEmpty()) {
 			sourceProperties.currentSourceName = sourceIdToNameMap.get(listSourceIndexes.get(0));
 		} else {
-			sourceProperties.currentSourceName = BarcoE2Constant.NOT_FOUND_LAYER;
+			sourceProperties.currentSourceName = BarcoE2Constant.NONE;
 		}
 	}
 	/**
@@ -1636,9 +1636,6 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		stats.put(String.format(BarcoE2Constant.GROUP_HASH_TAG_MEMBER, methodName, superDestination.getName()), superDestination.getListScreenDestName().get(0));
 		controls.add(createDropdown(String.format(BarcoE2Constant.GROUP_HASH_TAG_MEMBER, methodName, superDestination.getName()),
 				sourceProperties.currentSourceName, sourceList));
-		if (Objects.equals(sourceProperties.currentSourceName, BarcoE2Constant.DOUBLE_QUOTES)) {
-			sourceProperties.currentSourceName = BarcoE2Constant.NOT_FOUND_LAYER;
-		}
 		int numberOfSource = sourceProperties.numberOfSource;
 		if (numberOfSource > 1) {
 			stats.put(String.format("%s#%s%s", methodName, superDestination.getName(), BarcoE2Constant.DESTINATION_STATUS), BarcoE2Constant.DESTINATION_MIXED);

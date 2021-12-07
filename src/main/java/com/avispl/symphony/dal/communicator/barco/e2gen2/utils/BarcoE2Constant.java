@@ -46,6 +46,7 @@ public final class BarcoE2Constant {
 	public static final String SUCCESS_STATUS = "successCode";
 	public static final String LINK_LAYER_ID = "LinkLayerId";
 	public static final String LINK_DEST_ID = "LinkDestId";
+	public static final String PVW_MODE = "PvwMode";
 
 	// Preset
 	public static final String PRESET_NAME = "presetName";

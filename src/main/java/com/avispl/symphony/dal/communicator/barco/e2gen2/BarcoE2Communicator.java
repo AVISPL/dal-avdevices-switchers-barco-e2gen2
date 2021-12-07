@@ -222,7 +222,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	/**
 	 * Prepare meta data for the device
 	 */
-	private void prepareDeviceMetaData() throws Exception {
+	private void prepareDeviceMetaData() {
 		if (listSuperScreenDestId != null) {
 			listSuperDestId = handleListSuperId(true);
 		} else {
@@ -580,10 +580,10 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		Map<Object, Object> presetParam = new HashMap<>();
 		presetParam.put(BarcoE2Constant.ID, activePresetIndex);
 		JsonNode presetResponse = requestByMethod(BarcoE2Constant.METHOD_LIST_DESTINATIONS_FOR_PRESET, presetParam);
-		if (presetResponse == null || presetResponse.get(BarcoE2Constant.SUCCESS) == null) {
+		if (presetResponse == null) {
 			return BarcoE2Constant.NONE;
 		}
-		if (presetResponse.get(BarcoE2Constant.SUCCESS).asInt() != 0) {
+		if (presetResponse.get(BarcoE2Constant.SUCCESS) != null && presetResponse.get(BarcoE2Constant.SUCCESS).asInt() != 0) {
 			if (logger.isDebugEnabled() && response.get(BarcoE2Constant.RESPONSE) != null) {
 				logger.debug(response.get(BarcoE2Constant.RESPONSE));
 			}
@@ -731,7 +731,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 			int sourceIndex = layers.get(j).get(BarcoE2Constant.LAST_SRC_IDX).asInt();
 			int pgmMode = layers.get(j).get(BarcoE2Constant.PGM_MODE).asInt();
 			int linkDestId = layers.get(j).get(BarcoE2Constant.LINK_DEST_ID).asInt();
-			if (sourceIndex != -1 && pgmMode == 1 && linkDestId == -1 && sourceIdToNameMap.get(sourceIndex) != null) {
+			if (sourceIndex != -1 && pgmMode == 1 && sourceIdToNameMap.get(sourceIndex) != null && linkDestId == -1) {
 				listSourceIndexes.add(sourceIndex);
 			}
 		}
@@ -743,6 +743,33 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		}
 	}
 
+	/**
+	 * Update source properties for super screen destination
+	 *
+	 * @param destContent content of super screen destination
+	 * @param sourceProperties SourceProperties class
+	 */
+	private void updateSourcePropertiesForSuperScreenDest(JsonNode destContent, SourceProperties sourceProperties) {
+		JsonNode layers = destContent.get(BarcoE2Constant.LAYERS);
+		List<Integer> listSourceIndexes = new ArrayList<>();
+		for (int j = 0; j < layers.size(); j++) {
+			if (layers.get(j).get(BarcoE2Constant.LAST_SRC_IDX) == null) {
+				continue;
+			}
+			int sourceIndex = layers.get(j).get(BarcoE2Constant.LAST_SRC_IDX).asInt();
+			int pgmMode = layers.get(j).get(BarcoE2Constant.PGM_MODE).asInt();
+			int linkDestId = layers.get(j).get(BarcoE2Constant.LINK_DEST_ID).asInt();
+			if (sourceIndex != -1 && pgmMode == 1 && sourceIdToNameMap.get(sourceIndex) != null && linkDestId != -1) {
+				listSourceIndexes.add(sourceIndex);
+			}
+		}
+		sourceProperties.numberOfSource = listSourceIndexes.size();
+		if (!listSourceIndexes.isEmpty()) {
+			sourceProperties.currentSourceName = sourceIdToNameMap.get(listSourceIndexes.get(0));
+		} else {
+			sourceProperties.currentSourceName = BarcoE2Constant.NOT_FOUND_LAYER;
+		}
+	}
 	/**
 	 * Routing control: Screen + Aux Destination
 	 *
@@ -915,24 +942,22 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		// STEP 2 check if layer is mixed or single
 		JsonNode screenDestContent = getScreenDestContent(currentScreenDestId);
 		JsonNode layerNode = screenDestContent.get(BarcoE2Constant.LAYERS);
-		int layerId = -1;
-		int index = -1;
+		int layerIndex = -1;
 		for (int i = 0; i < layerNode.size(); i++) {
 			if (layerNode.get(i).get(BarcoE2Constant.LINK_DEST_ID).asInt() == -1) {
-				layerId = layerNode.get(i).get(BarcoE2Constant.ID).asInt();
-				index = i;
+				layerIndex = i;
 				break;
 			}
 		}
-		if (layerId == -1) {
+		if (layerIndex == -1) {
 			throw new ResourceNotReachableException(String.format("There is no normal layer in %s", screenName));
 		}
-		boolean isMixedLayer = checkLayerType(currentScreenDestId, index);
+		boolean isMixedLayer = checkLayerType(currentScreenDestId, layerIndex);
 		// STEP 3 Clear layers:
-		clearLayerFromDest(currentScreenDestId, layerId, isMixedLayer);
+		clearLayerFromDest(currentScreenDestId, layerIndex, isMixedLayer);
 		// STEP 4 changeContent
 		int getSourceIndex = getNewSourceIndex(sourceName);
-		assignToDest(getSourceIndex, currentScreenDestId, layerId, isMixedLayer);
+		assignToDest(getSourceIndex, currentScreenDestId, layerIndex, isMixedLayer);
 	}
 
 	/**
@@ -996,11 +1021,11 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	 *
 	 * @param getSourceIndex new source index
 	 * @param currentScreenDestId name of current super/screen destination
-	 * @param layerId layer id
+	 * @param layerIdx index of layer
 	 * @param isMixedLayer check if layer is mixed
 	 * @throws Exception Throw exception when fail to changeContent
 	 */
-	private void assignToDest(int getSourceIndex, int currentScreenDestId, int layerId, boolean isMixedLayer) throws Exception {
+	private void assignToDest(int getSourceIndex, int currentScreenDestId, int layerIdx, boolean isMixedLayer) throws Exception {
 		// STEP 1 get dimension from source and destination
 		Dimension sourceDimension = populateDimension(getSourceIndex, true);
 		Dimension destDimension = populateDimension(currentScreenDestId, false);
@@ -1012,12 +1037,12 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		JsonNode currenScreenDestContent = getScreenDestContent(currentScreenDestId);
 		JsonNode layerNode = currenScreenDestContent.get(BarcoE2Constant.LAYERS);
 		if (isMixedLayer) {
-			LayerDTO firstLayerDTO = prepareLayerDTO(layerId, getSourceIndex, 1, 0, layerDimension, layerNode);
+			LayerDTO firstLayerDTO = prepareLayerDTO(layerIdx, getSourceIndex, 1, 0, layerDimension, layerNode);
 			layerDTOList.add(firstLayerDTO);
-			LayerDTO secondLayerDTO = prepareLayerDTO(layerId + 1, getSourceIndex, 0, 1, layerDimension, layerNode);
+			LayerDTO secondLayerDTO = prepareLayerDTO(layerIdx + 1, getSourceIndex, 0, 1, layerDimension, layerNode);
 			layerDTOList.add(secondLayerDTO);
 		} else {
-			LayerDTO layerDTO = prepareLayerDTO(layerId, getSourceIndex, 1, 1, layerDimension, layerNode);
+			LayerDTO layerDTO = prepareLayerDTO(layerIdx, getSourceIndex, 1, 1, layerDimension, layerNode);
 			layerDTOList.add(layerDTO);
 		}
 		// STEP 4 prepare param before call changeContent
@@ -1155,7 +1180,15 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 			if (isMixedType && currentLayerID == excludeLayerId + 1) {
 				continue;
 			}
-			layerRequestDTOList.add(new LayerRequestDTO(currentLayerID));
+			int linkDestId = screenDestContent.get(i).get(BarcoE2Constant.LINK_DEST_ID).asInt();
+			if (linkDestId != -1) {
+				continue;
+			}
+			int pvwMode = screenDestContent.get(i).get(BarcoE2Constant.PVW_MODE).asInt();
+			int pgmMode = screenDestContent.get(i).get(BarcoE2Constant.PGM_MODE).asInt();
+			if (pvwMode == 1 || pgmMode == 1) {
+				layerRequestDTOList.add(new LayerRequestDTO(currentLayerID));
+			}
 		}
 		Map<Object, Object> clearLayerParams = new HashMap<>();
 		clearLayerParams.put(BarcoE2Constant.SCREEN_ID, currentScreenDestId);
@@ -1192,38 +1225,35 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		// STEP 3: From screen dest id =>  getScreenDestContent
 		JsonNode currenScreenDestContent = getScreenDestContent(currentScreenDestId);
 		JsonNode layerNode = currenScreenDestContent.get(BarcoE2Constant.LAYERS);
-		int globalLayerId = -1;
-		int index = -1;
+		int globalLayerIdx = -1;
 		for (int i = 0; i < layerNode.size(); i++) {
 			JsonNode currentLayer = layerNode.get(i);
 			if (currentLayer != null && superDestination.getId() == currentLayer.get(BarcoE2Constant.LINK_DEST_ID).asInt()) {
-				globalLayerId = currentLayer.get(BarcoE2Constant.ID).asInt();
-				index = i;
+				globalLayerIdx = i;
 				break;
 			}
 		}
 		boolean isSuccess;
 		int getSourceIndex = getNewSourceIndex(sourceName);
-		if (globalLayerId == -1) {
+		if (globalLayerIdx == -1) {
 			// CASE 1 assign to first layer
 			boolean isMixedLayer = checkLayerType(currentScreenDestId, 0);
 			isSuccess = assignAndVerifySource(currentScreenDestId, getSourceIndex, isMixedLayer, 0);
 		} else {
 			// CASE 2 assign to globalLayerId's layer
-			boolean isMixedLayer = checkLayerType(currentScreenDestId, index);
-			isSuccess = assignAndVerifySource(currentScreenDestId, getSourceIndex, isMixedLayer, globalLayerId);
+			boolean isMixedLayer = checkLayerType(currentScreenDestId, globalLayerIdx);
+			isSuccess = assignAndVerifySource(currentScreenDestId, getSourceIndex, isMixedLayer, globalLayerIdx);
 			if (!isSuccess) {
 				// retry 1 more time on layer 0
-				if (globalLayerId == 0){
+				if (globalLayerIdx == 0){
 					for (int i = 0; i < layerNode.size(); i++) {
-						if (i == index){
+						if (i == globalLayerIdx){
 							continue;
 						}
 						JsonNode currentLayer = layerNode.get(i);
 						if (currentLayer != null && currentLayer.get(BarcoE2Constant.LINK_DEST_ID).asInt() == -1) {
-							int normalLayerIndex = currentLayer.get(BarcoE2Constant.ID).asInt();
 							boolean isMixedLayer2 = checkLayerType(currentScreenDestId, i);
-							isSuccess = assignAndVerifySource(currentScreenDestId, getSourceIndex, isMixedLayer2, normalLayerIndex);
+							isSuccess = assignAndVerifySource(currentScreenDestId, getSourceIndex, isMixedLayer2, i);
 							break;
 						}
 					}
@@ -1323,13 +1353,23 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 					int hSize = destNode.get(j).get(BarcoE2Constant.H_SIZE).asInt();
 					int vSize = destNode.get(j).get(BarcoE2Constant.V_SIZE).asInt();
 					int destArea = hSize * vSize;
-					mapAreaOfDest.put(destArea, screenDestId);
+					mapAreaOfDest.put(screenDestId, destArea);
 					break;
 				}
 			}
 		}
-		int maxArea = mapAreaOfDest.keySet().stream().max(Integer::compareTo).orElse(0);
-		return mapAreaOfDest.get(maxArea);
+		Map.Entry<Integer, Integer> maxEntry = null;
+		for (Map.Entry<Integer, Integer> entry : mapAreaOfDest.entrySet())
+		{
+			if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
+			{
+				maxEntry = entry;
+			}
+		}
+		if (maxEntry == null) {
+			return 0;
+		}
+		return maxEntry.getKey();
 	}
 
 	/**
@@ -1592,37 +1632,17 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		// STEP 2 update number of source and number and current assigned source name
 		SourceProperties sourceProperties = new SourceProperties();
 		JsonNode screenDestContent = getScreenDestContent(currentScreenDestId);
-		updateSourcePropertiesValue(true, screenDestContent, sourceProperties);
+		updateSourcePropertiesForSuperScreenDest( screenDestContent, sourceProperties);
 		stats.put(String.format(BarcoE2Constant.GROUP_HASH_TAG_MEMBER, methodName, superDestination.getName()), superDestination.getListScreenDestName().get(0));
 		controls.add(createDropdown(String.format(BarcoE2Constant.GROUP_HASH_TAG_MEMBER, methodName, superDestination.getName()),
 				sourceProperties.currentSourceName, sourceList));
 		if (Objects.equals(sourceProperties.currentSourceName, BarcoE2Constant.DOUBLE_QUOTES)) {
-			sourceProperties.currentSourceName = BarcoE2Constant.NONE;
+			sourceProperties.currentSourceName = BarcoE2Constant.NOT_FOUND_LAYER;
 		}
-		int numberOfSource = getNumberOfSourceOfSuperDest(superDestination);
+		int numberOfSource = sourceProperties.numberOfSource;
 		if (numberOfSource > 1) {
 			stats.put(String.format("%s#%s%s", methodName, superDestination.getName(), BarcoE2Constant.DESTINATION_STATUS), BarcoE2Constant.DESTINATION_MIXED);
 		}
-	}
-
-	/**
-	 * Get number of source for super destination
-	 *
-	 * @param superDestination Super Destination DTO
-	 * @return This returns number of sources
-	 * @throws Exception Throw exception when fail to get screen dest content
-	 */
-	private int getNumberOfSourceOfSuperDest(SuperDestination superDestination) throws Exception {
-		int numberOfSource = 0;
-		for (int i = 0; i < superDestination.getListScreenDestName().size(); i++) {
-			SourceProperties sourceProperties2 = new SourceProperties();
-			String currentName = superDestination.getListScreenDestName().get(i);
-			int currentDestId = getCurrentScreenDestId(currentName);
-			JsonNode currentScreenDestContent = getScreenDestContent(currentDestId);
-			updateSourcePropertiesValue(true, currentScreenDestContent, sourceProperties2);
-			numberOfSource += sourceProperties2.numberOfSource;
-		}
-		return numberOfSource;
 	}
 
 	/**

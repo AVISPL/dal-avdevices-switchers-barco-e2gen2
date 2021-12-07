@@ -123,7 +123,7 @@ class BarcoE2CommunicatorTest {
 		barcoE2Communicator.init();
 		barcoE2Communicator.getMultipleStatistics();
 		List<Statistics> statistics = barcoE2Communicator.getMultipleStatistics();
-		assertEquals("None", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2ControllingMetric.PRESETS_PRESET.getName()));
+		assertEquals("Screen+Super", ((ExtendedStatistics) statistics.get(0)).getStatistics().get(BarcoE2ControllingMetric.PRESETS_PRESET.getName()));
 	}
 
 	/**

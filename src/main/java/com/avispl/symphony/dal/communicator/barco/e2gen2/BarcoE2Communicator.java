@@ -1006,6 +1006,10 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 			LayerDTO layerDTO = new LayerDTO(currentLayer.get(BarcoE2Constant.ID).asInt(), -1, 0, 0);
 			Dimension dimension = populateDimension(destId, false);
 			layerDTO.setDimension(dimension);
+			int linkDestId = currentLayer.get(BarcoE2Constant.LINK_DEST_ID).asInt();
+			layerDTO.setLinkDestId(linkDestId);
+			int linkLayerId = currentLayer.get(BarcoE2Constant.LINK_LAYER_ID).asInt();
+			layerDTO.setLinkLayerId(linkLayerId);
 			Map<Object, Object> changeScreenParams = new HashMap<>();
 			changeScreenParams.put(BarcoE2Constant.ID, destId);
 			changeScreenParams.put(BarcoE2Constant.LAYERS, List.of(layerDTO).toArray());

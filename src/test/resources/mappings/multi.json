@@ -220,6 +220,24 @@
         "method": "POST",
         "bodyPatterns": [
           {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listAuxContent\",\"params\":{\"id\" :-1}, \"id\": 1234}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"id\":1,\"Name\":\"AuxDest2\",\"PvwLastSrcIndex\":-1,\"PgmLastSrcIndex\":-1,\"OutputCfg\":[{\"id\":4,\"Name\":\"HDMIOutput5\",\"OutputAOI\":[{\"id\":0,\"TestPattern\":[{\"id\":0,\"TestPatternMode\":0}]}]}]}},\"id\":\"1234\"}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
             "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listSuperAuxContent\",\"params\":{\"id\" :0}, \"id\": 1234}"
           }
         ],
@@ -304,6 +322,24 @@
         }
       }
     },{
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\n  \"jsonrpc\" : \"2.0\",\"method\" : \"clearLayers\",\"params\" : {\"screenId\" : 1,\"Layers\" : []\n  },\n  \"id\" : 1234\n}\n"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n    \"jsonrpc\": \"2.0\",\n    \"result\": {\n        \"success\": 0,\n        \"response\": {\n        }\n    },\n    \"id\": \"1234\"\n}\n",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
       "request": {
         "method": "POST",
         "bodyPatterns": [
@@ -416,7 +452,7 @@
         "method": "POST",
         "bodyPatterns": [
           {
-            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"changeAuxContent\",\"params\":{\"PgmLastSrcIndex\":0, \"id\":0}, \"id\": 1234}"
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"changeAuxContent\",\"params\":{\"PgmLastSrcIndex\":0, \"id\":0, \"PvwLastSrcIndex\":0}, \"id\": 1234}"
           }
         ],
         "url": "/"
@@ -434,24 +470,7 @@
         "method": "POST",
         "bodyPatterns": [
           {
-            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 1,\n    \"Layers\": [\n      {\n        \"id\": 0,\n        \"LastSrcIdx\": 0,\n        \"PvwMode\": 1,\n        \"PgmMode\": 0\n,\"Window\" : {\"HPos\" : 960,\"VPos\" : 0, \"HSize\" : 1920,\"VSize\" : 1080 }     }\n, {\n        \"id\": 1,\n        \"LastSrcIdx\": 0,\n        \"PvwMode\": 0,\n        \"PgmMode\": 1\n,\"Window\" : {\"HPos\" : 960,\"VPos\" : 0, \"HSize\" : 1920,\"VSize\" : 1080 }     }\n    ]\n  },\n  \"id\": 1234\n}"
-          }
-        ],
-        "url": "/"
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n    \"jsonrpc\": \"2.0\",\n    \"result\": {\n        \"success\": 0,\n        \"response\": {\n        }\n    },\n    \"id\": \"1234\"\n}\n",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      }
-    },{
-      "request": {
-        "method": "POST",
-        "bodyPatterns": [
-          {
-            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 1,\n    \"Layers\": [\n      {\n        \"id\": 4,\n        \"LastSrcIdx\": 0,\n        \"PvwMode\": 1,\n        \"PgmMode\": 0\n,\"Window\" : {\"HPos\" : 960,\"VPos\" : 0, \"HSize\" : 1920,\"VSize\" : 1080 }     }\n, {\n        \"id\": 5,\n        \"LastSrcIdx\": 0,\n        \"PvwMode\": 0,\n        \"PgmMode\": 1\n,\"Window\" : {\"HPos\" : 960,\"VPos\" : 0, \"HSize\" : 1920,\"VSize\" : 1080 }     }\n    ]\n  },\n  \"id\": 1234\n}"
+            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 1,\n    \"Layers\": [\n      {\n        \"id\": 0,\n        \"LastSrcIdx\": 0,\n        \"PvwMode\": 1,\n        \"PgmMode\": 0\n,\"Window\" : {\"HPos\" : 960,\"VPos\" : 0, \"HSize\" : 1920,\"VSize\" : 1080 }     }\n, {\n        \"id\": 1,\n        \"LastSrcIdx\": 0,\n \"LinkLayerId\": -1, \"LinkDestId\" : -1  ,      \"PvwMode\": 0,\n        \"PgmMode\": 1\n,\"Window\" : {\"HPos\" : 960,\"VPos\" : 0, \"HSize\" : 1920,\"VSize\" : 1080 }     }\n    ]\n  },\n  \"id\": 1234\n}"
           }
         ],
         "url": "/"
@@ -469,58 +488,7 @@
         "method": "POST",
         "bodyPatterns": [
           {
-            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 1,\n    \"Layers\": [\n      {\n        \"id\": 1,\n        \"LastSrcIdx\": -1,\n        \"PvwMode\": 0,\n        \"PgmMode\": 1\n,\"Window\" : {\"HPos\" : 0,\"VPos\" : 0, \"HSize\" : 0,\"VSize\" : 0 }     }\n    ]\n  },\n  \"id\": 1234\n}"
-          }
-        ],
-        "url": "/"
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n    \"jsonrpc\": \"2.0\",\n    \"result\": {\n        \"success\": 0,\n        \"response\": {\n        }\n    },\n    \"id\": \"1234\"\n}\n",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      }
-    },{
-      "request": {
-        "method": "POST",
-        "bodyPatterns": [
-          {
-            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 1,\n    \"Layers\": [\n      {\n        \"id\": 2,\n        \"LastSrcIdx\": -1,\n        \"PvwMode\": 0,\n        \"PgmMode\": 1\n,\"Window\" : {\"HPos\" : 0,\"VPos\" : 0, \"HSize\" : 0,\"VSize\" : 0 }      }\n    ]\n  },\n  \"id\": 1234\n}"
-          }
-        ],
-        "url": "/"
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n    \"jsonrpc\": \"2.0\",\n    \"result\": {\n        \"success\": 0,\n        \"response\": {\n        }\n    },\n    \"id\": \"1234\"\n}\n",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      }
-    },{
-      "request": {
-        "method": "POST",
-        "bodyPatterns": [
-          {
-            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 1,\n    \"Layers\": [\n      {\n        \"id\": 3,\n        \"LastSrcIdx\": -1,\n        \"PvwMode\": 0,\n        \"PgmMode\": 1\n,\"Window\" : {\"HPos\" : 0,\"VPos\" : 0, \"HSize\" : 0,\"VSize\" : 0 }      }\n    ]\n  },\n  \"id\": 1234\n}"
-          }
-        ],
-        "url": "/"
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n    \"jsonrpc\": \"2.0\",\n    \"result\": {\n        \"success\": 0,\n        \"response\": {\n        }\n    },\n    \"id\": \"1234\"\n}\n",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      }
-    },{
-      "request": {
-        "method": "POST",
-        "bodyPatterns": [
-          {
-            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 1,\n    \"Layers\": [\n      {\n        \"id\": 4,\n        \"LastSrcIdx\": -1,\n        \"PvwMode\": 0,\n        \"PgmMode\": 1\n ,\"Window\" : {\"HPos\" : 0,\"VPos\" : 0, \"HSize\" : 0,\"VSize\" : 0 }     }\n    ]\n  },\n  \"id\": 1234\n}"
+            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 1,\n    \"Layers\": [\n      {\n        \"id\": 0,\n        \"LastSrcIdx\": 0,\n        \"PvwMode\": 1,\n        \"PgmMode\": 0\n,\"Window\" : {\"HPos\" : 960,\"VPos\" : 0, \"HSize\" : 1920,\"VSize\" : 1080 }     }\n, {\n        \"id\": 1,\n        \"LastSrcIdx\": 0,\n \"LinkLayerId\": -1, \"LinkDestId\" : -1  ,      \"PvwMode\": 0,\n        \"PgmMode\": 1\n,\"Window\" : {\"HPos\" : 960,\"VPos\" : 0, \"HSize\" : 1920,\"VSize\" : 1080 }     }\n    ]\n  },\n  \"id\": 1234\n}"
           }
         ],
         "url": "/"
@@ -538,7 +506,116 @@
         "method": "POST",
         "bodyPatterns": [
           {
-            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 1,\n    \"Layers\": [\n      {\n        \"id\": 5,\n        \"LastSrcIdx\": -1,\n        \"PvwMode\": 0,\n        \"PgmMode\": 1\n,\"Window\" : {\"HPos\" : 0,\"VPos\" : 0, \"HSize\" : 0,\"VSize\" : 0 }      }\n    ]\n  },\n  \"id\": 1234\n}"
+            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 1,\n    \"Layers\": [\n      {\n        \"id\": 4,\n        \"LastSrcIdx\": 0,  \"LinkLayerId\": -1, \"LinkDestId\" : -1  ,       \"PvwMode\": 1,\n        \"PgmMode\": 0\n,\"Window\" : {\"HPos\" : 960,\"VPos\" : 0, \"HSize\" : 1920,\"VSize\" : 1080 }     }\n, {\n        \"id\": 5,\n        \"LastSrcIdx\": 0,\n        \"PvwMode\": 0,\n        \"PgmMode\": 1\n,\"Window\" : {\"HPos\" : 960,\"VPos\" : 0, \"HSize\" : 1920,\"VSize\" : 1080 }     }\n    ]\n  },\n  \"id\": 1234\n}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n    \"jsonrpc\": \"2.0\",\n    \"result\": {\n        \"success\": 0,\n        \"response\": {\n        }\n    },\n    \"id\": \"1234\"\n}\n",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 1,\n    \"Layers\": [\n      {\n        \"id\": 0,\n        \"LastSrcIdx\": 0,\n        \"PvwMode\": 1,\n        \"PgmMode\": 0,\n        \"LinkLayerId\": -1,\n        \"LinkDestId\" : -1,\n        \"Window\" : {\n          \"HPos\" : 960,\n          \"VPos\" : 0,\n          \"HSize\" : 1920,\n          \"VSize\" : 1080 \n        }     \n      }\n    ]\n  },\n  \"id\": 1234\n}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n    \"jsonrpc\": \"2.0\",\n    \"result\": {\n        \"success\": 0,\n        \"response\": {\n        }\n    },\n    \"id\": \"1234\"\n}\n",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 1,\n    \"Layers\": [\n      {\n        \"id\": 1,\n        \"LastSrcIdx\": -1,\n    \n \"LinkLayerId\": -1, \"LinkDestId\" : -1  ,    \"PvwMode\": 0,\n        \"PgmMode\": 1\n,\"Window\" : {\"HPos\" : 0,\"VPos\" : 0, \"HSize\" : 0,\"VSize\" : 0 }     }\n    ]\n  },\n  \"id\": 1234\n}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n    \"jsonrpc\": \"2.0\",\n    \"result\": {\n        \"success\": 0,\n        \"response\": {\n        }\n    },\n    \"id\": \"1234\"\n}\n",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 1,\n    \"Layers\": [\n      {\n        \"id\": 1,\n        \"LastSrcIdx\": 0,\n    \n \"LinkLayerId\": -1, \"LinkDestId\" : -1  ,    \"PvwMode\": 0,\n        \"PgmMode\": 1\n,\"Window\" : {\"HPos\" : 960,\"VPos\" : 0, \"HSize\" : 1920,\"VSize\" : 1080 }     }\n    ]\n  },\n  \"id\": 1234\n}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n    \"jsonrpc\": \"2.0\",\n    \"result\": {\n        \"success\": 0,\n        \"response\": {\n        }\n    },\n    \"id\": \"1234\"\n}\n",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 1,\n    \"Layers\": [\n      {\n        \"id\": 0,\n        \"LastSrcIdx\": 0,\n    \n \"LinkLayerId\": -1, \"LinkDestId\" : -1  ,    \"PvwMode\": 0,\n        \"PgmMode\": 1\n,\"Window\" : {\"HPos\" : 960,\"VPos\" : 0, \"HSize\" : 1920,\"VSize\" : 1080 }     }\n    ]\n  },\n  \"id\": 1234\n}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n    \"jsonrpc\": \"2.0\",\n    \"result\": {\n        \"success\": 0,\n        \"response\": {\n        }\n    },\n    \"id\": \"1234\"\n}\n",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ,
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 1,\n    \"Layers\": [\n      {\n        \"id\": 1,\n        \"LastSrcIdx\": 0,\n    \n \"LinkLayerId\": -1, \"LinkDestId\" : -1  ,    \"PvwMode\": 1,\n        \"PgmMode\": 0\n,\"Window\" : {\"HPos\" : 960,\"VPos\" : 0, \"HSize\" : 1920,\"VSize\" : 1080 }     }\n    ]\n  },\n  \"id\": 1234\n}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n    \"jsonrpc\": \"2.0\",\n    \"result\": {\n        \"success\": 0,\n        \"response\": {\n        }\n    },\n    \"id\": \"1234\"\n}\n",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ,{
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 1,\n    \"Layers\": [\n      {\n        \"id\": 2,\n        \"LastSrcIdx\": -1,\n  \n \"LinkLayerId\": -1, \"LinkDestId\" : -1  ,      \"PvwMode\": 0,\n        \"PgmMode\": 1\n,\"Window\" : {\"HPos\" : 0,\"VPos\" : 0, \"HSize\" : 0,\"VSize\" : 0 }      }\n    ]\n  },\n  \"id\": 1234\n}"
           }
         ],
         "url": "/"
@@ -555,7 +632,24 @@
         "method": "POST",
         "bodyPatterns": [
           {
-            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 0,\n    \"Layers\": [\n      {\n        \"id\": 4,\n        \"LastSrcIdx\": 0,\n        \"PvwMode\": 0,\n        \"PgmMode\": 1\n ,\"Window\" : {\"HPos\" : 0,\"VPos\" : 0, \"HSize\" : 1920,\"VSize\" : 1080 }     }\n    ]\n  },\n  \"id\": 1234\n}"
+            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 1,\n    \"Layers\": [\n      {\n        \"id\": 3,\n        \"LastSrcIdx\": -1,\n  \n \"LinkLayerId\": -1, \"LinkDestId\" : -1  ,      \"PvwMode\": 0,\n        \"PgmMode\": 1\n,\"Window\" : {\"HPos\" : 0,\"VPos\" : 0, \"HSize\" : 0,\"VSize\" : 0 }      }\n    ]\n  },\n  \"id\": 1234\n}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n    \"jsonrpc\": \"2.0\",\n    \"result\": {\n        \"success\": 0,\n        \"response\": {\n        }\n    },\n    \"id\": \"1234\"\n}\n",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },{
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 1,\n    \"Layers\": [\n      {\n        \"id\": 4,\n        \"LastSrcIdx\": -1,\n   \n \"LinkLayerId\": -1, \"LinkDestId\" : -1  ,     \"PvwMode\": 0,\n        \"PgmMode\": 1\n ,\"Window\" : {\"HPos\" : 0,\"VPos\" : 0, \"HSize\" : 0,\"VSize\" : 0 }     }\n    ]\n  },\n  \"id\": 1234\n}"
           }
         ],
         "url": "/"
@@ -573,7 +667,7 @@
         "method": "POST",
         "bodyPatterns": [
           {
-            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 0,\n    \"Layers\": [\n      {\n        \"id\": 4,\n        \"LastSrcIdx\": 0,\n        \"PvwMode\": 0,\n        \"PgmMode\": 1\n ,\"Window\" : {\"HPos\" : 0,\"VPos\" : 0, \"HSize\" : 0,\"VSize\" : 0 }     }\n    ]\n  },\n  \"id\": 1234\n}"
+            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 1,\n    \"Layers\": [\n      {\n        \"id\": 4,\n        \"LastSrcIdx\": 0,\n   \n \"LinkLayerId\": -1, \"LinkDestId\" : 0  ,     \"PvwMode\": 1,\n        \"PgmMode\": 0\n ,\"Window\" : {\"HPos\" : 960,\"VPos\" : 0, \"HSize\" : 1920,\"VSize\" : 1080 }     }\n    ]\n  },\n  \"id\": 1234\n}"
           }
         ],
         "url": "/"
@@ -591,7 +685,97 @@
         "method": "POST",
         "bodyPatterns": [
           {
-            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"changeAuxContent\",\"params\":{\"PgmLastSrcIndex\":1, \"id\":0}, \"id\": 1234}"
+            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 1,\n    \"Layers\": [\n      {\n        \"id\": 5,\n        \"LastSrcIdx\": 0,\n   \n \"LinkLayerId\": -1, \"LinkDestId\" : 0  ,     \"PvwMode\": 0,\n        \"PgmMode\": 1\n ,\"Window\" : {\"HPos\" : 960,\"VPos\" : 0, \"HSize\" : 1920,\"VSize\" : 1080 }     }\n    ]\n  },\n  \"id\": 1234\n}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n    \"jsonrpc\": \"2.0\",\n    \"result\": {\n        \"success\": 0,\n        \"response\": {\n        }\n    },\n    \"id\": \"1234\"\n}\n",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 1,\n    \"Layers\": [\n      {\n        \"id\": 5,\n        \"LastSrcIdx\": -1,\n  \n \"LinkLayerId\": -1, \"LinkDestId\" : -1  ,      \"PvwMode\": 0,\n        \"PgmMode\": 1\n,\"Window\" : {\"HPos\" : 0,\"VPos\" : 0, \"HSize\" : 0,\"VSize\" : 0 }      }\n    ]\n  },\n  \"id\": 1234\n}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n    \"jsonrpc\": \"2.0\",\n    \"result\": {\n        \"success\": 0,\n        \"response\": {\n        }\n    },\n    \"id\": \"1234\"\n}\n",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },{
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 0,\n    \"Layers\": [\n      {\n        \"id\": 4,\n        \"LastSrcIdx\": 0,\n   \n \"LinkLayerId\": -1, \"LinkDestId\" : -1  ,     \"PvwMode\": 0,\n        \"PgmMode\": 1\n ,\"Window\" : {\"HPos\" : 0,\"VPos\" : 0, \"HSize\" : 1920,\"VSize\" : 1080 }     }\n    ]\n  },\n  \"id\": 1234\n}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n    \"jsonrpc\": \"2.0\",\n    \"result\": {\n        \"success\": 0,\n        \"response\": {\n        }\n    },\n    \"id\": \"1234\"\n}\n",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 0,\n    \"Layers\": [\n      {\n        \"id\": 4,\n        \"LastSrcIdx\": 0,\n   \n \"LinkLayerId\": -1, \"LinkDestId\" : -1  ,     \"PvwMode\": 0,\n        \"PgmMode\": 1\n ,\"Window\" : {\"HPos\" : 0,\"VPos\" : 0, \"HSize\" : 1920,\"VSize\" : 1080 }     }\n    ]\n  },\n  \"id\": 1234\n}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n    \"jsonrpc\": \"2.0\",\n    \"result\": {\n        \"success\": 0,\n        \"response\": {\n        }\n    },\n    \"id\": \"1234\"\n}\n",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"changeContent\",\n  \"params\": {\n    \"id\": 0,\n    \"Layers\": [\n      {\n        \"id\": 4,\n        \"LastSrcIdx\": 0,\n \"LinkLayerId\": -1,\n \"LinkDestId\" : -1  ,\n   \"PvwMode\": 0,\n        \"PgmMode\": 1\n ,\"Window\" : {\"HPos\" : 0,\"VPos\" : 0, \"HSize\" : 0,\"VSize\" : 0 }     }\n    ]\n  },\n  \"id\": 1234\n}"
+          }
+        ],
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n    \"jsonrpc\": \"2.0\",\n    \"result\": {\n        \"success\": 0,\n        \"response\": {\n        }\n    },\n    \"id\": \"1234\"\n}\n",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"changeAuxContent\",\"params\":{\"PgmLastSrcIndex\":1, \"id\":0 , \"PvwLastSrcIndex\":1}, \"id\": 1234}"
           }
         ],
         "url": "/"
@@ -670,6 +854,24 @@
       "response": {
         "status": 200,
         "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":[]},\"id\":\"1234\"}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listAuxContent\",\"params\":{\"id\" :-1}, \"id\": 1234}"
+          }
+        ],
+        "url": "/expect-exception"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"id\":1,\"Name\":\"AuxDest2\",\"PvwLastSrcIndex\":-1,\"PgmLastSrcIndex\":-1,\"OutputCfg\":[{\"id\":4,\"Name\":\"HDMIOutput5\",\"OutputAOI\":[{\"id\":0,\"TestPattern\":[{\"id\":0,\"TestPatternMode\":0}]}]}]}},\"id\":\"1234\"}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -891,6 +1093,24 @@
         "method": "POST",
         "bodyPatterns": [
           {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listDestinations\",\"params\":{\"type\":2}, \"id\": 1234}"
+          }
+        ],
+        "url": "/expect-exception"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"AuxDestination\":[{\"id\":0,\"AuxStreamMode\":1,\"Name\":\"DSM\",\"FrzMode\":0}]}},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
             "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listContent\",\"params\":{\"id\" : 1}, \"id\": 1234}"
           }
         ],
@@ -917,6 +1137,24 @@
       "response": {
         "status": 200,
         "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{}},\"id\":1234}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"jsonrpc\":\"2.0\",\"method\":\"listAuxContent\",\"params\":{\"id\" :-1}, \"id\": 1234}"
+          }
+        ],
+        "url": "/null-device-information-power-status"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"jsonrpc\":\"2.0\",\"result\":{\"success\":0,\"response\":{\"id\":1,\"Name\":\"AuxDest2\",\"PvwLastSrcIndex\":-1,\"PgmLastSrcIndex\":-1,\"OutputCfg\":[{\"id\":4,\"Name\":\"HDMIOutput5\",\"OutputAOI\":[{\"id\":0,\"TestPattern\":[{\"id\":0,\"TestPatternMode\":0}]}]}]}},\"id\":\"1234\"}",
         "headers": {
           "Content-Type": "application/json"
         }

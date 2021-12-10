@@ -25,6 +25,12 @@ public class LayerDTO {
 	@JsonProperty("PgmMode")
 	private int pgmMode;
 
+	@JsonProperty("LinkLayerId")
+	private int linkLayerId;
+
+	@JsonProperty("LinkDestId")
+	private int linkDestId;
+
 	@JsonProperty("Window")
 	private Dimension dimension;
 
@@ -130,6 +136,42 @@ public class LayerDTO {
 	 */
 	public void setDimension(Dimension dimension) {
 		this.dimension = dimension;
+	}
+
+	/**
+	 * Retrieves {@code {@link #linkLayerId}}
+	 *
+	 * @return value of {@link #linkLayerId}
+	 */
+	public int getLinkLayerId() {
+		return linkLayerId;
+	}
+
+	/**
+	 * Sets {@code linkLayerId}
+	 *
+	 * @param linkLayerId the {@code int} field
+	 */
+	public void setLinkLayerId(int linkLayerId) {
+		this.linkLayerId = linkLayerId;
+	}
+
+	/**
+	 * Retrieves {@code {@link #linkDestId}}
+	 *
+	 * @return value of {@link #linkDestId}
+	 */
+	public int getLinkDestId() {
+		return linkDestId;
+	}
+
+	/**
+	 * Sets {@code linkDestId}
+	 *
+	 * @param linkDestId the {@code int} field
+	 */
+	public void setLinkDestId(int linkDestId) {
+		this.linkDestId = linkDestId;
 	}
 
 }

@@ -18,6 +18,7 @@ public final class BarcoE2Constant {
 	public static final String ID = "id";
 	public static final String NAME = "Name";
 	public static final String PGM_LAST_SRC_INDEX = "PgmLastSrcIndex";
+	public static final String PVM_LAST_SRC_INDEX = "PvwLastSrcIndex";
 	public static final String TYPE = "type";
 	public static final String LABEL_ACTIVATE_ON_PROGRAM = "Activate on Program";
 	public static final String LABEL_PRESSED_RECALLING_PRESET = "Recalling preset ...";
@@ -43,6 +44,9 @@ public final class BarcoE2Constant {
 	public static final int ACTIVE_PRESET_ON_PROGRAM = 1;
 	public static final int SHOW_ALL_DESTINATION = 0;
 	public static final String SUCCESS_STATUS = "successCode";
+	public static final String LINK_LAYER_ID = "LinkLayerId";
+	public static final String LINK_DEST_ID = "LinkDestId";
+	public static final String PVW_MODE = "PvwMode";
 
 	// Preset
 	public static final String PRESET_NAME = "presetName";
@@ -81,13 +85,15 @@ public final class BarcoE2Constant {
 	public static final String AUX_DEST_COLLECTION = "AuxDestCollection";
 	public static final String DEST_COLLECTION = "DestCollection";
 	public static final String GROUP_HASH_TAG_MEMBER = "%s#%s";
-	public static final String GROUP_DEST_HASH_TAG_DEST_NAME_COLON_MEMBER = "%s#%s-%s";
 	public static final String SCREEN_ID = "screenId";
 
 	public static final String GLOBAL_LAYER_COLLECTION = "GlobalLayerCollection";
 	public static final String GLOBAL_LAYER = "GlobalLayer";
-	public static final String LINK_DEST_ID = "LinkDestId";
 	public static final String NOT_FOUND_LAYER = "NotFoundLayer";
 	public static final String GLOBAL_LAYERS = "GlobalLayers";
+	public static final String PGM_MODE = "PgmMode";
+	public static final String SCREEN_DESTINATION = "ScreenDestination";
+	public static final String AUX_DESTINATION = "AuxDestination";
+	public static final String COLON = ":";
 }
 

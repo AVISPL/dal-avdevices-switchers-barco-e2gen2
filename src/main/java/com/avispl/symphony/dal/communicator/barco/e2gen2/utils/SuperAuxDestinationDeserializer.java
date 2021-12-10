@@ -60,6 +60,9 @@ public class SuperAuxDestinationDeserializer extends StdDeserializer<SuperAuxDes
 		superAuxDestination.sethSize(jsonNode.get(BarcoE2Constant.V_SIZE).asInt());
 
 		JsonNode arrayNode = jsonNode.get(BarcoE2Constant.AUX_DEST_COLLECTION);
+		if (arrayNode == null) {
+			throw new ResourceNotReachableException("Fail to get collection of aux destination");
+		}
 		List<AuxDestination> auxDestinationList = new ArrayList<>();
 		for (int i = 0; i < arrayNode.size(); i++) {
 			if (arrayNode.get(i) == null) {

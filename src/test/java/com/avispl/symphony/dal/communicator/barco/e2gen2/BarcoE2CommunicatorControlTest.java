@@ -117,7 +117,7 @@ class BarcoE2CommunicatorControlTest {
 		ControllableProperty property = new ControllableProperty();
 		// Press the "Activate On Program" button.
 		property.setValue("CAM1-1");
-		property.setProperty(String.format("%s#%s", BarcoE2ControllingMetric.AUX_DESTINATION.getName(),"DSM"));
+		property.setProperty(String.format("%s#%s", BarcoE2ControllingMetric.AUX_DESTINATIONS.getName(),"DSM"));
 		barcoE2Communicator.controlProperty(property);
 		Map<Object, Object> params = new HashMap<>();
 		params.put(BarcoE2Constant.ID, 0);
@@ -138,7 +138,7 @@ class BarcoE2CommunicatorControlTest {
 		ControllableProperty property = new ControllableProperty();
 		// Press the "Activate On Program" button.
 		property.setValue("CAM2-2");
-		property.setProperty(String.format("%s#%s-%s", BarcoE2ControllingMetric.SUPER_AUX_DESTINATION.getName(),"SuperAux1","DSM"));
+		property.setProperty(String.format("%s#%s", BarcoE2ControllingMetric.SUPER_AUX_DESTINATION.getName()+":"+"SuperAux1","DSM"));
 		barcoE2Communicator.controlProperty(property);
 		Map<Object, Object> params = new HashMap<>();
 		params.put(BarcoE2Constant.ID, 0);
@@ -159,7 +159,7 @@ class BarcoE2CommunicatorControlTest {
 		ControllableProperty property = new ControllableProperty();
 		// Press the "Activate On Program" button.
 		property.setValue("CAM1-1");
-		property.setProperty(String.format("%s#%s", BarcoE2ControllingMetric.SCREEN_DESTINATION.getName(),"Main Screen"));
+		property.setProperty(String.format("%s#%s", BarcoE2ControllingMetric.SCREEN_DESTINATIONS.getName(),"Main Screen"));
 		barcoE2Communicator.controlProperty(property);
 		Mockito.verify(barcoE2Communicator,times(1)).controlProperty(property);
 	}
@@ -176,7 +176,7 @@ class BarcoE2CommunicatorControlTest {
 		ControllableProperty property = new ControllableProperty();
 		// Press the "Activate On Program" button.
 		property.setValue("CAM1-1");
-		property.setProperty(String.format("%s#%s", BarcoE2ControllingMetric.SUPER_SCREEN_DESTINATION.getName(),"SuperDest1"));
+		property.setProperty(String.format("%s#%s", BarcoE2ControllingMetric.SUPER_SCREEN_DESTINATION.getName()+":SuperDest1","Main Screen"));
 		barcoE2Communicator.controlProperty(property);
 		Mockito.verify(barcoE2Communicator,times(1)).controlProperty(property);
 	}

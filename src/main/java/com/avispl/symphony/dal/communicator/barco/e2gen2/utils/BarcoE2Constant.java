@@ -85,7 +85,6 @@ public final class BarcoE2Constant {
 	public static final String AUX_DEST_COLLECTION = "AuxDestCollection";
 	public static final String DEST_COLLECTION = "DestCollection";
 	public static final String GROUP_HASH_TAG_MEMBER = "%s#%s";
-	public static final String GROUP_DEST_HASH_TAG_DEST_NAME_COLON_MEMBER = "%s#%s-%s";
 	public static final String SCREEN_ID = "screenId";
 
 	public static final String GLOBAL_LAYER_COLLECTION = "GlobalLayerCollection";
@@ -93,5 +92,8 @@ public final class BarcoE2Constant {
 	public static final String NOT_FOUND_LAYER = "NotFoundLayer";
 	public static final String GLOBAL_LAYERS = "GlobalLayers";
 	public static final String PGM_MODE = "PgmMode";
+	public static final String SCREEN_DESTINATION = "ScreenDestination";
+	public static final String AUX_DESTINATION = "AuxDestination";
+	public static final String COLON = ":";
 }
 

@@ -150,6 +150,13 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		String value = String.valueOf(controllableProperty.getValue());
 		String propertyMethod = property.substring(0, property.indexOf(BarcoE2Constant.HASH_TAG));
 		String propertyValue = property.substring(property.indexOf(BarcoE2Constant.HASH_TAG) + 1);
+		if (propertyMethod.contains(BarcoE2ControllingMetric.SUPER_SCREEN_DESTINATION.getName() + BarcoE2Constant.COLON) || propertyMethod.contains(
+				BarcoE2ControllingMetric.SUPER_AUX_DESTINATION.getName() + BarcoE2Constant.COLON)) {
+			String[] splitDestString = propertyMethod.split(BarcoE2Constant.COLON);
+			if (splitDestString[0].trim().equals(BarcoE2ControllingMetric.SUPER_SCREEN_DESTINATION.getName()) || splitDestString[0].trim().equals(BarcoE2ControllingMetric.SUPER_AUX_DESTINATION.getName())) {
+				propertyMethod = splitDestString[0];
+			}
+		}
 		if (logger.isDebugEnabled()) {
 			logger.debug(String.format("Controlling device with property: %s and value: %s", property, value));
 		}
@@ -161,13 +168,13 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 			case PRESETS_PRESET_ACTIVATE:
 				controlActivatePreset();
 				break;
-			case SCREEN_DESTINATION:
+			case SCREEN_DESTINATIONS:
 				controlAssignSourceToScreenDest(value, propertyValue);
 				break;
 			case SUPER_SCREEN_DESTINATION:
 				controlAssignSourceToSuperDest(value, propertyValue);
 				break;
-			case AUX_DESTINATION:
+			case AUX_DESTINATIONS:
 				controlAssignSourceToAuxDest(value, propertyValue);
 				break;
 			case SUPER_AUX_DESTINATION:
@@ -217,6 +224,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		extendedStatistics.setStatistics(statistics);
 		extendedStatistics.setControllableProperties(controls);
 		return Collections.singletonList(extendedStatistics);
+
 	}
 
 	/**
@@ -317,8 +325,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	 */
 	private void controlAssignSourceToSuperAuxDest(String sourceName, String destName) throws Exception {
 		try {
-			String auxDestName = getAuxDestinationName(destName);
-			changeAuxContent(auxDestName, sourceName);
+			changeAuxContent(destName, sourceName);
 		} catch (Exception e) {
 			if (e instanceof ResourceNotReachableException || e instanceof CommandFailureException) {
 				throw e;
@@ -334,9 +341,9 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	 * @param sourceName name of the new source
 	 * @throws Exception when fail to change aux content
 	 */
-	private void controlAssignSourceToAuxDest(String destName, String sourceName) throws Exception {
+	private void controlAssignSourceToAuxDest(String sourceName, String destName) throws Exception {
 		try {
-			changeAuxContent(sourceName, destName);
+			changeAuxContent(destName, sourceName);
 		} catch (Exception e) {
 			if (e instanceof ResourceNotReachableException || e instanceof CommandFailureException) {
 				throw e;
@@ -352,9 +359,9 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	 * @param sourceName name of the new source
 	 * @throws Exception when fail to assign source
 	 */
-	private void controlAssignSourceToScreenDest(String destName, String sourceName) throws Exception {
+	private void controlAssignSourceToScreenDest(String sourceName, String destName) throws Exception {
 		try {
-			changeScreenContent(sourceName, destName);
+			changeScreenContent(destName, sourceName);
 		} catch (Exception e) {
 			if (e instanceof ResourceNotReachableException || e instanceof CommandFailureException) {
 				throw e;
@@ -370,9 +377,9 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	 * @param sourceName name of the new source
 	 * @throws Exception when fail to assign source
 	 */
-	private void controlAssignSourceToSuperDest(String destName, String sourceName) throws Exception {
+	private void controlAssignSourceToSuperDest(String sourceName, String destName) throws Exception {
 		try {
-			changeSuperScreenContent(sourceName, destName);
+			changeScreenContent(destName, sourceName);
 		} catch (Exception e) {
 			if (e instanceof ResourceNotReachableException || e instanceof CommandFailureException) {
 				throw e;
@@ -401,20 +408,6 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	}
 
 	/**
-	 * Get Aux destination name from SuperAux-AuxDestination String
-	 *
-	 * @param propertyValue String SuperAuxName-AuxName
-	 */
-	private String getAuxDestinationName(String propertyValue) {
-		try {
-			String[] splitString = propertyValue.split(BarcoE2Constant.DASH);
-			return splitString[1];
-		} catch (Exception e) {
-			throw new IllegalArgumentException("Fail to split the aux destination name from superAuxDest-auxDest", e);
-		}
-	}
-
-	/**
 	 * Get Controlling metric based on preset/ routing metric
 	 *
 	 * @param property String of the property from controlProperty
@@ -423,7 +416,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	 */
 	private BarcoE2ControllingMetric getBarcoE2ControllingMetric(String property, String propertyMethod) {
 		BarcoE2ControllingMetric barcoE2ControllingMetric;
-		if (propertyMethod.equals(BarcoE2ControllingMetric.SCREEN_DESTINATION.getName()) || propertyMethod.equals(BarcoE2ControllingMetric.AUX_DESTINATION.getName())
+		if (propertyMethod.equals(BarcoE2ControllingMetric.SCREEN_DESTINATIONS.getName()) || propertyMethod.equals(BarcoE2ControllingMetric.AUX_DESTINATIONS.getName())
 				|| propertyMethod.equals(BarcoE2ControllingMetric.SUPER_SCREEN_DESTINATION.getName()) || propertyMethod.equals(BarcoE2ControllingMetric.SUPER_AUX_DESTINATION.getName())) {
 			barcoE2ControllingMetric = BarcoE2ControllingMetric.getByName(propertyMethod);
 		} else {
@@ -545,13 +538,15 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		presetParam.put(BarcoE2Constant.ID, BarcoE2Constant.LIST_ALL_DESTINATION_FOR_PRESET);
 		JsonNode response = requestByMethod(BarcoE2Constant.METHOD_LIST_DESTINATIONS_FOR_PRESET, presetParam);
 		List<String> dropDownOptions = new ArrayList<>();
-		if (response.get(BarcoE2Constant.RESPONSE) != null && response.get(BarcoE2Constant.RESPONSE).isEmpty()) {
+		JsonNode responseNode = response.get(BarcoE2Constant.RESPONSE);
+		if (responseNode != null && responseNode.isEmpty()) {
 			return Collections.emptyList();
 		}
 		for (int i = 0; i < response.size(); i++) {
 			JsonNode responseNodeName = response.get(i);
-			if (responseNodeName != null && responseNodeName.get(BarcoE2Constant.NAME) != null) {
-				dropDownOptions.add(responseNodeName.get(BarcoE2Constant.NAME).asText());
+			JsonNode destinationName = responseNodeName.get(BarcoE2Constant.NAME);
+			if (destinationName != null) {
+				dropDownOptions.add(destinationName.asText());
 			}
 		}
 		return dropDownOptions;
@@ -569,8 +564,9 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		if (recallPresetResponse.isNumber()) {
 			response = recallPresetResponse;
 		} else {
-			if (recallPresetResponse.get(BarcoE2Constant.RESPONSE) != null) {
-				response = recallPresetResponse.get(BarcoE2Constant.RESPONSE);
+			JsonNode recallPresetResponseNode = recallPresetResponse.get(BarcoE2Constant.RESPONSE);
+			if (recallPresetResponseNode != null) {
+				response = recallPresetResponseNode;
 			} else {
 				return BarcoE2Constant.NONE;
 			}
@@ -583,13 +579,17 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		if (presetResponse == null) {
 			return BarcoE2Constant.NONE;
 		}
-		if (presetResponse.get(BarcoE2Constant.SUCCESS) != null && presetResponse.get(BarcoE2Constant.SUCCESS).asInt() != 0) {
-			if (logger.isDebugEnabled() && response.get(BarcoE2Constant.RESPONSE) != null) {
-				logger.debug(response.get(BarcoE2Constant.RESPONSE));
+		JsonNode presetResponseStatus = presetResponse.get(BarcoE2Constant.SUCCESS);
+		if (presetResponseStatus != null && presetResponseStatus.asInt() != 0) {
+			// error message from the device
+			JsonNode presetRes = response.get(BarcoE2Constant.RESPONSE);
+			if (logger.isDebugEnabled() && presetRes != null) {
+				logger.debug(presetRes);
 			}
 			return BarcoE2Constant.NONE;
 		}
-		if (presetResponse.get(BarcoE2Constant.RESPONSE) != null && presetResponse.get(BarcoE2Constant.RESPONSE).isEmpty()) {
+		JsonNode presetRes = presetResponse.get(BarcoE2Constant.RESPONSE);
+		if (presetRes != null && presetRes.isEmpty() && presetResponse.get(BarcoE2Constant.NAME) == null) {
 			return BarcoE2Constant.NONE;
 		}
 		activePresetResult = presetResponse.get(BarcoE2Constant.NAME).asText();
@@ -661,9 +661,12 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		}
 		boolean presetStatus = false;
 		for (int i = 0; i < allPreset.size(); i++) {
-			if (allPreset.get(i).get(BarcoE2Constant.NAME) != null && allPreset.get(i).get(BarcoE2Constant.NAME).asText().equals(presetName)) {
-				presetStatus = true;
-				break;
+			if (allPreset.get(i) != null) {
+				JsonNode presetNameNode = allPreset.get(i).get(BarcoE2Constant.NAME);
+				if (presetNameNode != null && presetNameNode.asText().equals(presetName)) {
+					presetStatus = true;
+					break;
+				}
 			}
 		}
 		if (!presetStatus) {
@@ -674,10 +677,11 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		param.put(BarcoE2Constant.PRESET_NAME, presetName);
 		param.put(BarcoE2Constant.TYPE, BarcoE2Constant.ACTIVE_PRESET_ON_PROGRAM);
 		JsonNode activatePresetResponse = requestByMethod(BarcoE2Constant.METHOD_ACTIVATE_PRESET, param);
-		if (activatePresetResponse.get(BarcoE2Constant.SUCCESS_STATUS) == null) {
+		JsonNode activatePresetSuccessNode = activatePresetResponse.get(BarcoE2Constant.SUCCESS_STATUS);
+		if (activatePresetSuccessNode == null) {
 			throw new CommandFailureException(this.getAddress(), "activatePreset", "Fail to activatePreset");
 		}
-		return activatePresetResponse.get(BarcoE2Constant.SUCCESS_STATUS).asInt() == 0;
+		return activatePresetSuccessNode.asInt() == 0;
 	}
 
 	/**
@@ -725,12 +729,13 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		JsonNode layers = destContent.get(BarcoE2Constant.LAYERS);
 		List<Integer> listSourceIndexes = new ArrayList<>();
 		for (int j = 0; j < layers.size(); j++) {
-			if (layers.get(j).get(BarcoE2Constant.LAST_SRC_IDX) == null) {
+			JsonNode currentLayerNode = layers.get(j);
+			if (currentLayerNode == null) {
 				continue;
 			}
-			int sourceIndex = layers.get(j).get(BarcoE2Constant.LAST_SRC_IDX).asInt();
-			int pgmMode = layers.get(j).get(BarcoE2Constant.PGM_MODE).asInt();
-			int linkDestId = layers.get(j).get(BarcoE2Constant.LINK_DEST_ID).asInt();
+			int sourceIndex = currentLayerNode.get(BarcoE2Constant.LAST_SRC_IDX).asInt();
+			int pgmMode = currentLayerNode.get(BarcoE2Constant.PGM_MODE).asInt();
+			int linkDestId = currentLayerNode.get(BarcoE2Constant.LINK_DEST_ID).asInt();
 			if (sourceIndex != -1 && pgmMode == 1 && sourceIdToNameMap.get(sourceIndex) != null && linkDestId == -1) {
 				listSourceIndexes.add(sourceIndex);
 			}
@@ -744,33 +749,6 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	}
 
 	/**
-	 * Update source properties for super screen destination
-	 *
-	 * @param destContent content of super screen destination
-	 * @param sourceProperties SourceProperties class
-	 */
-	private void updateSourcePropertiesForSuperScreenDest(JsonNode destContent, SourceProperties sourceProperties) {
-		JsonNode layers = destContent.get(BarcoE2Constant.LAYERS);
-		List<Integer> listSourceIndexes = new ArrayList<>();
-		for (int j = 0; j < layers.size(); j++) {
-			if (layers.get(j).get(BarcoE2Constant.LAST_SRC_IDX) == null) {
-				continue;
-			}
-			int sourceIndex = layers.get(j).get(BarcoE2Constant.LAST_SRC_IDX).asInt();
-			int pgmMode = layers.get(j).get(BarcoE2Constant.PGM_MODE).asInt();
-			int linkDestId = layers.get(j).get(BarcoE2Constant.LINK_DEST_ID).asInt();
-			if (sourceIndex != -1 && pgmMode == 1 && sourceIdToNameMap.get(sourceIndex) != null && linkDestId != -1) {
-				listSourceIndexes.add(sourceIndex);
-			}
-		}
-		sourceProperties.numberOfSource = listSourceIndexes.size();
-		if (!listSourceIndexes.isEmpty()) {
-			sourceProperties.currentSourceName = sourceIdToNameMap.get(listSourceIndexes.get(0));
-		} else {
-			sourceProperties.currentSourceName = BarcoE2Constant.NONE;
-		}
-	}
-	/**
 	 * Routing control: Screen + Aux Destination
 	 *
 	 * @param isScreenDest True: "ScreenDestination", false: "AuxDestination"
@@ -779,30 +757,59 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	 * @throws Exception Throw exception if fail to get json node
 	 */
 	private void getRoutingControl(boolean isScreenDest, Map<String, String> stats, List<AdvancedControllableProperty> controls) throws Exception {
-		String methodName = isScreenDest ? BarcoE2ControllingMetric.SCREEN_DESTINATION.getName() : BarcoE2ControllingMetric.AUX_DESTINATION.getName();
+		String methodName = isScreenDest ? BarcoE2Constant.SCREEN_DESTINATION : BarcoE2Constant.AUX_DESTINATION;
 		JsonNode response = getRoutingControlJsonNode(methodName);
 		if (response == null) {
 			return;
 		}
 		// Screen/Aux dest loop
 		for (int i = 0; i < response.size(); i++) {
-			if (response.get(i).get(BarcoE2Constant.ID) == null) {
+			JsonNode currentDestContent = response.get(i);
+			if (currentDestContent == null || currentDestContent.get(BarcoE2Constant.ID) == null || currentDestContent.get(BarcoE2Constant.NAME) == null) {
 				continue;
 			}
-			String screenDestName = response.get(i).get(BarcoE2Constant.NAME).asText();
+			String screenDestName = currentDestContent.get(BarcoE2Constant.NAME).asText();
 			JsonNode destContent = getDestContent(isScreenDest, response, i);
+			String groupType = isScreenDest ? BarcoE2ControllingMetric.SCREEN_DESTINATIONS.getName() : BarcoE2ControllingMetric.AUX_DESTINATIONS.getName();
 			if (isScreenDest) {
-				JsonNode layers = destContent.get(BarcoE2Constant.LAYERS);
-				if (layers == null || layers.size() == 0) {
-					stats.put(String.format(BarcoE2Constant.GROUP_HASH_TAG_MEMBER, methodName, screenDestName), BarcoE2Constant.NOT_FOUND_LAYER);
-					return;
+				JsonNode layerNode = destContent.get(BarcoE2Constant.LAYERS);
+				if (layerNode == null) {
+					continue;
+				}
+				int firstNormalLayerIndex = -1;
+				firstNormalLayerIndex = getFirstNormalLayerIndex(layerNode, firstNormalLayerIndex);
+				if (firstNormalLayerIndex == -1) {
+					stats.put(String.format(BarcoE2Constant.GROUP_HASH_TAG_MEMBER, groupType, screenDestName), BarcoE2Constant.NOT_FOUND_LAYER);
+					continue;
 				}
 			}
 			SourceProperties sourceProperties = new SourceProperties();
 			updateSourcePropertiesValue(isScreenDest, destContent, sourceProperties);
 			List<String> sourceList = new ArrayList<>(sourceIdToNameMap.values());
-			populateRouting(stats, methodName, screenDestName, sourceProperties.currentSourceName, sourceList, controls, sourceProperties.numberOfSource);
+			populateRouting(stats, groupType, screenDestName, sourceProperties.currentSourceName, sourceList, controls, sourceProperties.numberOfSource);
 		}
+	}
+
+	/**
+	 * Get first normal layer index
+	 *
+	 * @param layerNode JsonNode
+	 * @param firstNormalLayerIndex normal layer index
+	 * @return layer index
+	 */
+	private int getFirstNormalLayerIndex(JsonNode layerNode, int firstNormalLayerIndex) {
+		for (int j = 0; j < layerNode.size(); j++) {
+			JsonNode currentLayerNode = layerNode.get(j);
+			JsonNode linkDestIdNode = currentLayerNode.get(BarcoE2Constant.LINK_DEST_ID);
+			if (linkDestIdNode == null) {
+				throw new ResourceNotReachableException(String.format("Cannot get layer at index %s", j));
+			}
+			if (linkDestIdNode.asInt() == -1) {
+				firstNormalLayerIndex = j;
+				break;
+			}
+		}
+		return firstNormalLayerIndex;
 	}
 
 	/**
@@ -880,11 +887,13 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		Map<Integer, String> sourceIdAndSourceName = new HashMap<>();
 		for (int i = 0; i < response.size(); i++) {
 			JsonNode sourceResponse = response.get(i);
-			if (sourceResponse == null) {
+			JsonNode sourceNameNode = sourceResponse.get(BarcoE2Constant.NAME);
+			JsonNode sourceIdNode = sourceResponse.get(BarcoE2Constant.ID);
+			if (sourceNameNode == null || sourceIdNode == null) {
 				continue;
 			}
-			String sourceName = sourceResponse.get(BarcoE2Constant.NAME).asText();
-			int sourceId = sourceResponse.get(BarcoE2Constant.ID).asInt();
+			String sourceName = sourceNameNode.asText();
+			int sourceId = sourceIdNode.asInt();
 			sourceIdAndSourceName.put(sourceId, sourceName);
 		}
 		if (sourceIdAndSourceName.size() == 0) {
@@ -913,9 +922,6 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	 */
 	private void populateRouting(Map<String, String> stats, String methodName, String screenDestName, String currentSourceName,
 			List<String> sourceList, List<AdvancedControllableProperty> controls, int numberOfSource) {
-		if (Objects.equals(currentSourceName, BarcoE2Constant.DOUBLE_QUOTES)) {
-			currentSourceName = BarcoE2Constant.NONE;
-		}
 		stats.put(String.format(BarcoE2Constant.GROUP_HASH_TAG_MEMBER, methodName, screenDestName), currentSourceName);
 		controls.add(createDropdown(String.format(BarcoE2Constant.GROUP_HASH_TAG_MEMBER, methodName, screenDestName), currentSourceName, sourceList));
 		if (numberOfSource > 1) {
@@ -933,7 +939,11 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	private void changeScreenContent(String screenName, String sourceName) throws Exception {
 		// STEP 1 get screen id
 		int currentScreenDestId = getCurrentScreenDestId(screenName);
-		// If sourceName = 'None' => clear all source and layers
+		if (currentScreenDestId == -1)
+		{
+			throw new ResourceNotReachableException(String.format("Not found destination with name %s", screenName));
+		}
+ 		// If sourceName = 'None' => clear all source and layers
 		if (BarcoE2Constant.NONE.equals(sourceName)) {
 			clearSourceFromLayer(currentScreenDestId);
 			clearLayerFromDest(currentScreenDestId, -1, false);
@@ -943,12 +953,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		JsonNode screenDestContent = getScreenDestContent(currentScreenDestId);
 		JsonNode layerNode = screenDestContent.get(BarcoE2Constant.LAYERS);
 		int layerIndex = -1;
-		for (int i = 0; i < layerNode.size(); i++) {
-			if (layerNode.get(i).get(BarcoE2Constant.LINK_DEST_ID).asInt() == -1) {
-				layerIndex = i;
-				break;
-			}
-		}
+		layerIndex = getFirstNormalLayerIndex(layerNode, layerIndex);
 		if (layerIndex == -1) {
 			throw new ResourceNotReachableException(String.format("There is no normal layer in %s", screenName));
 		}
@@ -956,31 +961,37 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		// STEP 3 Clear layers:
 		clearLayerFromDest(currentScreenDestId, layerIndex, isMixedLayer);
 		// STEP 4 changeContent
-		int getSourceIndex = getNewSourceIndex(sourceName);
-		assignToDest(getSourceIndex, currentScreenDestId, layerIndex, isMixedLayer);
+		int getSourceId = getNewSourceId(sourceName);
+		if (getSourceId == -1) {
+			throw new CommandFailureException(this.getAddress(), "getSourceId", String.format("There is no source with name %s", sourceName));
+		}
+		assignToDest(getSourceId, currentScreenDestId, layerIndex, isMixedLayer);
 	}
 
 	/**
 	 * Check layer type method - mixed/single layer
 	 *
 	 * @param currentScreenDestId screen dest id
+	 * @param layerId id of layer
 	 * @return return true if mixed layer, false: single layer
 	 * @throws Exception Throw exception when fail to get JsonNode or split string
 	 */
 	private boolean checkLayerType(int currentScreenDestId, int layerId) throws Exception {
 		JsonNode screenDestContent = getScreenDestContent(currentScreenDestId);
 		JsonNode layerNode = screenDestContent.get(BarcoE2Constant.LAYERS);
-		String firstLayerName = layerNode.get(layerId).get(BarcoE2Constant.NAME).asText();
-		if (layerNode.get(layerId).get(BarcoE2Constant.NAME) == null) {
+		JsonNode firstLayerNode = layerNode.get(layerId);
+		JsonNode secondLayerNode = layerNode.get(layerId + 1);
+		String firstLayerName = firstLayerNode.get(BarcoE2Constant.NAME).asText();
+		if (firstLayerNode.get(BarcoE2Constant.NAME) == null) {
 			throw new ResourceNotReachableException("Cannot get name of layer at index 0");
 		}
-		if (layerNode.get(layerId + 1) == null) {
+		if (secondLayerNode == null) {
 			return false;
 		}
-		if (layerNode.get(layerId + 1).get(BarcoE2Constant.NAME) == null) {
+		if (secondLayerNode.get(BarcoE2Constant.NAME) == null) {
 			throw new ResourceNotReachableException("Cannot get name of layer at index 1");
 		}
-		String secondLayerName = layerNode.get(layerId + 1).get(BarcoE2Constant.NAME).asText();
+		String secondLayerName = secondLayerNode.get(BarcoE2Constant.NAME).asText();
 		if (firstLayerName.length() == secondLayerName.length() && firstLayerName.contains(BarcoE2Constant.DASH) && secondLayerName.contains(BarcoE2Constant.DASH)) {
 			String[] firstLayerSplit = firstLayerName.split(BarcoE2Constant.DASH);
 			String[] secondLayerSplit = secondLayerName.split(BarcoE2Constant.DASH);
@@ -1007,6 +1018,10 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 			Dimension dimension = populateDimension(destId, false);
 			layerDTO.setDimension(dimension);
 			int linkDestId = currentLayer.get(BarcoE2Constant.LINK_DEST_ID).asInt();
+			// exclude super layer
+			if (linkDestId != -1) {
+				continue;
+			}
 			layerDTO.setLinkDestId(linkDestId);
 			int linkLayerId = currentLayer.get(BarcoE2Constant.LINK_LAYER_ID).asInt();
 			layerDTO.setLinkLayerId(linkLayerId);
@@ -1041,9 +1056,13 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		JsonNode currenScreenDestContent = getScreenDestContent(currentScreenDestId);
 		JsonNode layerNode = currenScreenDestContent.get(BarcoE2Constant.LAYERS);
 		if (isMixedLayer) {
-			LayerDTO firstLayerDTO = prepareLayerDTO(layerIdx, getSourceIndex, 1, 0, layerDimension, layerNode);
+			int secondLayerPgmMode = layerNode.get(layerIdx + 1).get(BarcoE2Constant.PGM_MODE).asInt();
+			int firstLayerPgmMode = secondLayerPgmMode == 0 ? 1 : 0;
+			int firstLayerPvwMode = Math.abs(firstLayerPgmMode - 1);
+			int secondLayerPvmMode = Math.abs(secondLayerPgmMode - 1);
+			LayerDTO firstLayerDTO = prepareLayerDTO(layerIdx, getSourceIndex, firstLayerPvwMode, firstLayerPgmMode, layerDimension, layerNode);
 			layerDTOList.add(firstLayerDTO);
-			LayerDTO secondLayerDTO = prepareLayerDTO(layerIdx + 1, getSourceIndex, 0, 1, layerDimension, layerNode);
+			LayerDTO secondLayerDTO = prepareLayerDTO(layerIdx + 1, getSourceIndex, secondLayerPvmMode, secondLayerPgmMode, layerDimension, layerNode);
 			layerDTOList.add(secondLayerDTO);
 		} else {
 			LayerDTO layerDTO = prepareLayerDTO(layerIdx, getSourceIndex, 1, 1, layerDimension, layerNode);
@@ -1083,8 +1102,9 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	private LayerDTO prepareLayerDTO(int layerId, int getSourceIndex, int pvmMode, int pgmMode, Dimension layerDimension, JsonNode layerNode) {
 		LayerDTO firstLayerDTO = new LayerDTO(layerId, getSourceIndex, pvmMode, pgmMode);
 		firstLayerDTO.setDimension(layerDimension);
-		int firstLinkLayerId = layerNode.get(layerId).get(BarcoE2Constant.LINK_LAYER_ID).asInt();
-		int firstLinkDestId = layerNode.get(layerId).get(BarcoE2Constant.LINK_DEST_ID).asInt();
+		JsonNode firstLayerNode = layerNode.get(layerId);
+		int firstLinkLayerId = firstLayerNode.get(BarcoE2Constant.LINK_LAYER_ID).asInt();
+		int firstLinkDestId = firstLayerNode.get(BarcoE2Constant.LINK_DEST_ID).asInt();
 		firstLayerDTO.setLinkLayerId(firstLinkLayerId);
 		firstLayerDTO.setLinkDestId(firstLinkDestId);
 		return firstLayerDTO;
@@ -1102,7 +1122,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		if (isSourceNode) {
 			jsonNode = requestByMethod(BarcoE2Constant.METHOD_LIST_SOURCES, new HashMap<>());
 		} else {
-			jsonNode = getRoutingControlJsonNode(BarcoE2ControllingMetric.SCREEN_DESTINATION.getName());
+			jsonNode = getRoutingControlJsonNode(BarcoE2Constant.SCREEN_DESTINATION);
 		}
 		Dimension dimension = new Dimension();
 		for (int i = 0; i < (jsonNode != null ? jsonNode.size() : 0); i++) {
@@ -1130,6 +1150,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	 * @return This returns the new dimension
 	 */
 	private Dimension calculateProperDimension(Dimension sourceDimension, Dimension destinationDimension) {
+		// CASE 1: new dim vsize = dest v size
 		Dimension newDimension = new Dimension();
 		newDimension.setvSize(destinationDimension.getvSize());
 		int newHsize = destinationDimension.getvSize() * sourceDimension.gethSize() / sourceDimension.getvSize();
@@ -1137,6 +1158,17 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		newDimension.setvPos(0);
 		int newHpos = (destinationDimension.gethSize() - newHsize) / 2;
 		newDimension.sethPos(newHpos);
+		if (newDimension.gethSize() > destinationDimension.gethSize() || newDimension.getvSize() > destinationDimension.getvSize()) {
+			// CASE 2:
+			newDimension = new Dimension();
+			newDimension.sethSize(destinationDimension.gethSize());
+			int newVsize = destinationDimension.gethSize() * sourceDimension.getvSize() / sourceDimension.gethSize();
+			newDimension.setvSize(newVsize);
+			newDimension.sethPos(0);
+			int newVPos = (destinationDimension.getvSize() - newVsize) / 2;
+			newDimension.setvPos(newVPos);
+		}
+
 		return newDimension;
 	}
 
@@ -1150,7 +1182,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	private int getCurrentScreenDestId(String screenName) throws Exception {
 		Map<Object, Object> params = new HashMap<>();
 		params.put(BarcoE2Constant.TYPE, BarcoE2Constant.DESTINATION_SCREEN_TYPE);
-		JsonNode response = requestByMethod(BarcoE2Constant.METHOD_LIST_DESTINATIONS, params).get(BarcoE2ControllingMetric.SCREEN_DESTINATION.getName());
+		JsonNode response = requestByMethod(BarcoE2Constant.METHOD_LIST_DESTINATIONS, params).get(BarcoE2Constant.SCREEN_DESTINATION);
 		int currentScreenDestId = BarcoE2Constant.NOT_MATCH_SCREEN_ID;
 		for (int i = 0; i < response.size(); i++) {
 			JsonNode screenResponse = response.get(i);
@@ -1160,6 +1192,28 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 			}
 		}
 		return currentScreenDestId;
+	}
+
+	/**
+	 * Routing control: get aux destination id
+	 *
+	 * @param auxName name of aux destination
+	 * @return This returns the id of aux destination
+	 * @throws Exception Throw exception when fail to get list of destination
+	 */
+	private int getCurrentAuxDestId(String auxName) throws Exception {
+		Map<Object, Object> params = new HashMap<>();
+		params.put(BarcoE2Constant.TYPE, BarcoE2Constant.DESTINATION_AUX_TYPE);
+		JsonNode response = requestByMethod(BarcoE2Constant.METHOD_LIST_DESTINATIONS, params).get(BarcoE2Constant.AUX_DESTINATION);
+		int currentAuxDestId = BarcoE2Constant.NOT_MATCH_SCREEN_ID;
+		for (int i = 0; i < response.size(); i++) {
+			JsonNode screenResponse = response.get(i);
+			if (screenResponse != null && Objects.equals(auxName, screenResponse.get(BarcoE2Constant.NAME).asText())) {
+				currentAuxDestId = screenResponse.get(BarcoE2Constant.ID).asInt();
+				break;
+			}
+		}
+		return currentAuxDestId;
 	}
 
 	/**
@@ -1174,22 +1228,23 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		JsonNode screenDestContent = getScreenDestContent(currentScreenDestId).get(BarcoE2Constant.LAYERS);
 		List<LayerRequestDTO> layerRequestDTOList = new ArrayList<>();
 		for (int i = 0; i < screenDestContent.size(); i++) {
-			if (screenDestContent.get(i).get(BarcoE2Constant.ID) == null) {
+			JsonNode currentScreenDestContent = screenDestContent.get(i);
+			if (currentScreenDestContent.get(BarcoE2Constant.ID) == null) {
 				throw new ResourceNotReachableException(String.format("Fail to get layer id in screen destination with id %s", currentScreenDestId));
 			}
-			int currentLayerID = screenDestContent.get(i).get(BarcoE2Constant.ID).asInt();
+			int currentLayerID = currentScreenDestContent.get(BarcoE2Constant.ID).asInt();
 			if (currentLayerID == excludeLayerId) {
 				continue;
 			}
 			if (isMixedType && currentLayerID == excludeLayerId + 1) {
 				continue;
 			}
-			int linkDestId = screenDestContent.get(i).get(BarcoE2Constant.LINK_DEST_ID).asInt();
+			int linkDestId = currentScreenDestContent.get(BarcoE2Constant.LINK_DEST_ID).asInt();
 			if (linkDestId != -1) {
 				continue;
 			}
-			int pvwMode = screenDestContent.get(i).get(BarcoE2Constant.PVW_MODE).asInt();
-			int pgmMode = screenDestContent.get(i).get(BarcoE2Constant.PGM_MODE).asInt();
+			int pvwMode = currentScreenDestContent.get(BarcoE2Constant.PVW_MODE).asInt();
+			int pgmMode = currentScreenDestContent.get(BarcoE2Constant.PGM_MODE).asInt();
 			if (pvwMode == 1 || pgmMode == 1) {
 				layerRequestDTOList.add(new LayerRequestDTO(currentLayerID));
 			}
@@ -1198,182 +1253,10 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		clearLayerParams.put(BarcoE2Constant.SCREEN_ID, currentScreenDestId);
 		clearLayerParams.put(BarcoE2Constant.LAYERS, layerRequestDTOList.toArray());
 		JsonNode clearLayerResponse = requestByMethod(BarcoE2Constant.METHOD_CLEAR_LAYERS, clearLayerParams);
-		if (clearLayerResponse.get(BarcoE2Constant.SUCCESS_STATUS) == null || clearLayerResponse.get(BarcoE2Constant.SUCCESS_STATUS).asInt() != 0) {
+		JsonNode clearLayerSuccessNode = clearLayerResponse.get(BarcoE2Constant.SUCCESS_STATUS);
+		if (clearLayerSuccessNode == null || clearLayerSuccessNode.asInt() != 0) {
 			throw new CommandFailureException(this.getAddress(), "clearLayers", "Fail to call clearLayers");
 		}
-	}
-
-	/**
-	 * Routing control:  Assign a new source to Super Screen Destination
-	 *
-	 * @param screenName Name of Super Screen Destination
-	 * @param sourceName The source that will be assigned to the Super Screen Destination
-	 * @throws Exception when fail to get destination content
-	 */
-	private void changeSuperScreenContent(String screenName, String sourceName) throws Exception {
-		// STEP 1:  From superScreenDestination => get global layer map and list of screen destination
-		// Exception are thrown when there's no global layer & no collection of screen destination
-		SuperDestination superDestination = populateSuperDestination(screenName);
-		// clear all source and layer from each screen destination in the super dest if source name = "None"
-		if (BarcoE2Constant.NONE.equals(sourceName)) {
-			List<String> screenDestString = superDestination.getListScreenDestName();
-			for (String currentScreenDestName : screenDestString) {
-				int screenDestId = getCurrentScreenDestId(currentScreenDestName);
-				clearSourceFromLayer(screenDestId);
-				clearLayerFromDest(screenDestId, -1, false);
-			}
-			return;
-		}
-		// STEP 2: From screen dest name list => get id of screen destination that has the largest area.
-		int currentScreenDestId = getDestHasMaxAreaId(superDestination);
-		// STEP 3: From screen dest id =>  getScreenDestContent
-		JsonNode currenScreenDestContent = getScreenDestContent(currentScreenDestId);
-		JsonNode layerNode = currenScreenDestContent.get(BarcoE2Constant.LAYERS);
-		int globalLayerIdx = -1;
-		for (int i = 0; i < layerNode.size(); i++) {
-			JsonNode currentLayer = layerNode.get(i);
-			if (currentLayer != null && superDestination.getId() == currentLayer.get(BarcoE2Constant.LINK_DEST_ID).asInt()) {
-				globalLayerIdx = i;
-				break;
-			}
-		}
-		boolean isSuccess;
-		int getSourceIndex = getNewSourceIndex(sourceName);
-		if (globalLayerIdx == -1) {
-			// CASE 1 assign to first layer
-			boolean isMixedLayer = checkLayerType(currentScreenDestId, 0);
-			isSuccess = assignAndVerifySource(currentScreenDestId, getSourceIndex, isMixedLayer, 0);
-		} else {
-			// CASE 2 assign to globalLayerId's layer
-			boolean isMixedLayer = checkLayerType(currentScreenDestId, globalLayerIdx);
-			isSuccess = assignAndVerifySource(currentScreenDestId, getSourceIndex, isMixedLayer, globalLayerIdx);
-			if (!isSuccess) {
-				// retry 1 more time on layer 0
-				if (globalLayerIdx == 0){
-					for (int i = 0; i < layerNode.size(); i++) {
-						if (i == globalLayerIdx){
-							continue;
-						}
-						JsonNode currentLayer = layerNode.get(i);
-						if (currentLayer != null && currentLayer.get(BarcoE2Constant.LINK_DEST_ID).asInt() == -1) {
-							boolean isMixedLayer2 = checkLayerType(currentScreenDestId, i);
-							isSuccess = assignAndVerifySource(currentScreenDestId, getSourceIndex, isMixedLayer2, i);
-							break;
-						}
-					}
-				} else {
-					boolean isMixedLayer2 = checkLayerType(currentScreenDestId, 0);
-					isSuccess = assignAndVerifySource(currentScreenDestId, getSourceIndex, isMixedLayer2, 0);
-				}
-			}
-		}
-		if (isSuccess) {
-			return;
-		}
-		throw new CommandFailureException(this.getAddress(), "changeContent", String.format("Source size greater than layer size of %s", screenName));
-	}
-
-	/**
-	 * Assign a source to destination and verify if the data is changed.
-	 *
-	 * @param currentScreenDestId Screen destination id
-	 * @param getSourceIndex new source index that will be assigned
-	 * @param isMixedLayer is mixed layer or single layer
-	 * @param layerIndex index of layer
-	 * @return This returns boolean indicates that success/fail to assign source
-	 * @throws Exception Throws exception when fail call post in the device
-	 */
-	private boolean assignAndVerifySource(int currentScreenDestId, int getSourceIndex, boolean isMixedLayer, int layerIndex) throws Exception {
-		boolean isSuccess;
-		clearLayerFromDest(currentScreenDestId, layerIndex, isMixedLayer);
-		assignToDest(getSourceIndex, currentScreenDestId, layerIndex, isMixedLayer);
-		// Sleep here to wait for the device to assign a source.
-		Thread.sleep(1000);
-		JsonNode screenContentAfterAssign = getScreenDestContent(currentScreenDestId).get(BarcoE2Constant.LAYERS).get(layerIndex);
-		isSuccess = isNewSourceAssigned(getSourceIndex, screenContentAfterAssign);
-		return isSuccess;
-	}
-
-	/**
-	 * Populate data for super destination DTO
-	 *
-	 * @param screenName name of super destination
-	 * @return This returns Super Destination DTO
-	 * @throws Exception Throw exception when fail to get JsonNode
-	 */
-	private SuperDestination populateSuperDestination(String screenName) throws Exception {
-		SuperDestination superDestination = new SuperDestination();
-		for (Integer integer : listSuperDestId) {
-			JsonNode superDestContent = getSuperDestContent(true, String.valueOf(integer));
-			if (superDestContent == null) {
-				throw new CommandFailureException(this.getAddress(), "listSuperDestContent", "Fail to call listSuperDestContent");
-			}
-			if (screenName.equals(superDestContent.get(BarcoE2Constant.NAME).asText())) {
-				superDestination = (SuperDestination) jsonNodeToDTO(superDestContent, SuperDestination.class);
-				break;
-			} else {
-				throw new IllegalArgumentException("Id of super destination from adapter properties don't match the id of routing super destination id");
-			}
-		}
-		if (superDestination.getGlobalLayerMap().isEmpty()) {
-			throw new ResourceNotReachableException("Global layer is required to assign a source to super destination");
-		}
-		if (superDestination.getListScreenDestName().isEmpty()) {
-			throw new ResourceNotReachableException("There is no screen destination that is assigned to this super destination");
-		}
-		return superDestination;
-	}
-
-	/**
-	 * Check if the new source is assigned to the destination
-	 *
-	 * @param sourceId id of the source
-	 * @param newSourceContent content of the new source
-	 * @return This returns the status of assigning a source to destination
-	 */
-	private boolean isNewSourceAssigned(int sourceId, JsonNode newSourceContent) {
-		return newSourceContent.get(BarcoE2Constant.LAST_SRC_IDX).asInt() == sourceId;
-	}
-
-	/**
-	 * Compare area of destination in screen destination list
-	 *
-	 * @param superDestination SuperDestination DTO
-	 * @return ID of the screen destination that has the largest area
-	 * @throws Exception Throw exception when fail to get JsonNode
-	 */
-	private int getDestHasMaxAreaId(SuperDestination superDestination) throws Exception {
-		List<String> screenDestString = superDestination.getListScreenDestName();
-		Map<Integer, Integer> mapAreaOfDest = new HashMap<>();
-		for (String currentScreenDestName : screenDestString) {
-			int screenDestId = getCurrentScreenDestId(currentScreenDestName);
-			JsonNode destNode = getRoutingControlJsonNode(BarcoE2ControllingMetric.SCREEN_DESTINATION.getName());
-			if (destNode == null) {
-				throw new ResourceNotReachableException("Fail to get list of screen destinations");
-			}
-			for (int j = 0; j < destNode.size(); j++) {
-				JsonNode currentDestNode = destNode.get(j);
-				if (currentDestNode.get(BarcoE2Constant.ID).asInt() == screenDestId) {
-					int hSize = destNode.get(j).get(BarcoE2Constant.H_SIZE).asInt();
-					int vSize = destNode.get(j).get(BarcoE2Constant.V_SIZE).asInt();
-					int destArea = hSize * vSize;
-					mapAreaOfDest.put(screenDestId, destArea);
-					break;
-				}
-			}
-		}
-		Map.Entry<Integer, Integer> maxEntry = null;
-		for (Map.Entry<Integer, Integer> entry : mapAreaOfDest.entrySet())
-		{
-			if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
-			{
-				maxEntry = entry;
-			}
-		}
-		if (maxEntry == null) {
-			return 0;
-		}
-		return maxEntry.getKey();
 	}
 
 	/**
@@ -1382,8 +1265,8 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 	 * @param sourceName new source name
 	 * @return This returns the new source index
 	 */
-	private int getNewSourceIndex(String sourceName) {
-		int newSourceIndex = 0;
+	private int getNewSourceId(String sourceName) {
+		int newSourceIndex = -1;
 		for (Entry<Integer, String> entry : sourceIdToNameMap.entrySet()) {
 			if (entry.getValue().equals(sourceName)) {
 				newSourceIndex = entry.getKey();
@@ -1404,7 +1287,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		// STEP 1 get aux destination id from auxName
 		Map<Object, Object> params = new HashMap<>();
 		params.put(BarcoE2Constant.TYPE, BarcoE2Constant.DESTINATION_AUX_TYPE);
-		JsonNode response = requestByMethod(BarcoE2Constant.METHOD_LIST_DESTINATIONS, params).get(BarcoE2ControllingMetric.AUX_DESTINATION.getName());
+		JsonNode response = requestByMethod(BarcoE2Constant.METHOD_LIST_DESTINATIONS, params).get(BarcoE2Constant.AUX_DESTINATION);
 		if (response == null) {
 			throw new ResourceNotReachableException("Fail to get list of aux destinations");
 		}
@@ -1454,13 +1337,14 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		for (Integer listDestId : listDestIds) {
 			JsonNode response = getSuperDestContent(isSuperDest, String.valueOf(listDestId));
 			if (response == null) {
-				return;
+				continue;
 			}
-			if (response.get(BarcoE2Constant.SUCCESS_STATUS) != null && response.get(BarcoE2Constant.SUCCESS_STATUS).asInt() == -1) {
+			JsonNode successStatusNode = response.get(BarcoE2Constant.SUCCESS_STATUS);
+			if (successStatusNode != null && successStatusNode.asInt() == -1) {
 				if (logger.isDebugEnabled() && response.get(BarcoE2Constant.RESPONSE) != null) {
 					logger.debug(response.get(BarcoE2Constant.RESPONSE));
 				}
- 				return;
+				continue;
 			}
 			populateSuperRouting(stats, controls, sourceList, methodName, response, isSuperDest);
 		}
@@ -1579,28 +1463,25 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		try {
 			superAuxDestination = (SuperAuxDestination) jsonNodeToDTO(response, SuperAuxDestination.class);
 		} catch (Exception e) {
-			throw new ResourceNotReachableException("Cannot get super aux destination with id given in adapter properties", e);
+			return;
 		}
 		if (superAuxDestination.getAuxDestinationList().isEmpty()) {
 			return;
 		}
 		List<AuxDestination> auxDestinationList = superAuxDestination.getAuxDestinationList();
-		int numberOfSourceInSuperAuxDest = 0;
 		for (AuxDestination auxDestination : auxDestinationList) {
 			// STEP 2 update number of source and number and current assigned source name
 			SourceProperties sourceProperties = new SourceProperties();
-			JsonNode auxDestContent = getAuxDestContent(auxDestination.getId());
+			int auxId = getCurrentAuxDestId(auxDestination.getName());
+			JsonNode auxDestContent = getAuxDestContent(auxId);
 			updateSourcePropertiesValue(false, auxDestContent, sourceProperties);
 			if (Objects.equals(sourceProperties.currentSourceName, BarcoE2Constant.DOUBLE_QUOTES)) {
 				sourceProperties.currentSourceName = BarcoE2Constant.NONE;
 			}
-			stats.put(String.format(BarcoE2Constant.GROUP_DEST_HASH_TAG_DEST_NAME_COLON_MEMBER, methodName, superAuxDestination.getName(), auxDestination.getName()), sourceProperties.currentSourceName);
-			controls.add(createDropdown(String.format(BarcoE2Constant.GROUP_DEST_HASH_TAG_DEST_NAME_COLON_MEMBER, methodName, superAuxDestination.getName(), auxDestination.getName()),
+			String groupNameAndSuperAuxName = methodName + BarcoE2Constant.COLON + superAuxDestination.getName();
+			stats.put(String.format(BarcoE2Constant.GROUP_HASH_TAG_MEMBER, groupNameAndSuperAuxName, auxDestination.getName()), sourceProperties.currentSourceName);
+			controls.add(createDropdown(String.format(BarcoE2Constant.GROUP_HASH_TAG_MEMBER, groupNameAndSuperAuxName, auxDestination.getName()),
 					sourceProperties.currentSourceName, sourceList));
-			numberOfSourceInSuperAuxDest += sourceProperties.numberOfSource;
-		}
-		if (numberOfSourceInSuperAuxDest > 1) {
-			stats.put(String.format("%s#%s%s", methodName, superAuxDestination.getName(), BarcoE2Constant.DESTINATION_STATUS), BarcoE2Constant.DESTINATION_MIXED);
 		}
 	}
 
@@ -1620,29 +1501,42 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		try {
 			superDestination = (SuperDestination) jsonNodeToDTO(response, SuperDestination.class);
 		} catch (Exception e) {
-			throw new ResourceNotReachableException("Cannot get super destination with id given in adapter properties", e);
-		}
-		if (superDestination.getGlobalLayerMap().isEmpty()) {
-			stats.put(String.format(BarcoE2Constant.GROUP_HASH_TAG_MEMBER, methodName, superDestination.getName()), BarcoE2Constant.NOT_FOUND_LAYER);
 			return;
 		}
 		if (superDestination.getListScreenDestName().isEmpty()) {
-			stats.put(String.format(BarcoE2Constant.GROUP_HASH_TAG_MEMBER, methodName, superDestination.getName()), BarcoE2Constant.NOT_FOUND_LAYER);
 			return;
 		}
-		// Default value will be the first screen destination's source
-		String firstScreenDest = superDestination.getListScreenDestName().get(0);
-		int currentScreenDestId = getCurrentScreenDestId(firstScreenDest);
-		// STEP 2 update number of source and number and current assigned source name
-		SourceProperties sourceProperties = new SourceProperties();
-		JsonNode screenDestContent = getScreenDestContent(currentScreenDestId);
-		updateSourcePropertiesForSuperScreenDest( screenDestContent, sourceProperties);
-		stats.put(String.format(BarcoE2Constant.GROUP_HASH_TAG_MEMBER, methodName, superDestination.getName()), superDestination.getListScreenDestName().get(0));
-		controls.add(createDropdown(String.format(BarcoE2Constant.GROUP_HASH_TAG_MEMBER, methodName, superDestination.getName()),
-				sourceProperties.currentSourceName, sourceList));
-		int numberOfSource = sourceProperties.numberOfSource;
-		if (numberOfSource > 1) {
-			stats.put(String.format("%s#%s%s", methodName, superDestination.getName(), BarcoE2Constant.DESTINATION_STATUS), BarcoE2Constant.DESTINATION_MIXED);
+		List<String> screenDestNameList = superDestination.getListScreenDestName();
+		for (String destName : screenDestNameList) {
+			// STEP 2 update number of source and number and current assigned source name
+			SourceProperties sourceProperties = new SourceProperties();
+			int screenId = getCurrentScreenDestId(destName);
+			JsonNode screenDestContent = getScreenDestContent(screenId);
+			updateSourcePropertiesValue(true, screenDestContent, sourceProperties);
+			String groupNameAndSuperDestName = methodName + BarcoE2Constant.COLON + superDestination.getName();
+			JsonNode layerNode = screenDestContent.get(BarcoE2Constant.LAYERS);
+			if (layerNode == null) {
+				continue;
+			}
+			int haveNormalLayer = -1;
+			for (int j = 0; j < layerNode.size(); j++) {
+				JsonNode currentLayerNode = layerNode.get(j);
+				JsonNode linkDestIdNode = currentLayerNode.get(BarcoE2Constant.LINK_DEST_ID);
+				if (linkDestIdNode == null) {
+					throw new ResourceNotReachableException(String.format("Cannot get layer at index %s", j));
+				}
+				if (linkDestIdNode.asInt() == -1) {
+					haveNormalLayer = j;
+					break;
+				}
+			}
+			if (haveNormalLayer == -1) {
+				stats.put(String.format(BarcoE2Constant.GROUP_HASH_TAG_MEMBER, groupNameAndSuperDestName, destName), BarcoE2Constant.NOT_FOUND_LAYER);
+				continue;
+			}
+			stats.put(String.format(BarcoE2Constant.GROUP_HASH_TAG_MEMBER, groupNameAndSuperDestName, destName), sourceProperties.currentSourceName);
+			controls.add(createDropdown(String.format(BarcoE2Constant.GROUP_HASH_TAG_MEMBER, groupNameAndSuperDestName, destName),
+					sourceProperties.currentSourceName, sourceList));
 		}
 	}
 

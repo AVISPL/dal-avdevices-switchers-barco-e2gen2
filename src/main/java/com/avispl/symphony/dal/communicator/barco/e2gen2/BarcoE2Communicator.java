@@ -153,7 +153,8 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		if (propertyMethod.contains(BarcoE2ControllingMetric.SUPER_SCREEN_DESTINATION.getName() + BarcoE2Constant.COLON) || propertyMethod.contains(
 				BarcoE2ControllingMetric.SUPER_AUX_DESTINATION.getName() + BarcoE2Constant.COLON)) {
 			String[] splitDestString = propertyMethod.split(BarcoE2Constant.COLON);
-			if (splitDestString[0].trim().equals(BarcoE2ControllingMetric.SUPER_SCREEN_DESTINATION.getName()) || splitDestString[0].trim().equals(BarcoE2ControllingMetric.SUPER_AUX_DESTINATION.getName())) {
+			String firstItem = splitDestString[0].trim();
+			if (firstItem.equals(BarcoE2ControllingMetric.SUPER_SCREEN_DESTINATION.getName()) || firstItem.equals(BarcoE2ControllingMetric.SUPER_AUX_DESTINATION.getName())) {
 				propertyMethod = splitDestString[0];
 			}
 		}

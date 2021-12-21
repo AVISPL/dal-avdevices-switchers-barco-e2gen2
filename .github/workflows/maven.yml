@@ -21,7 +21,7 @@ jobs:
       - id: shortrev
         run: echo ::set-output name=rev::$(git rev-parse --short HEAD)
       - id: pversion
-        run: echo ::set-output name=ver::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        run: echo ::set-output name=ver::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout| sed -e 's/-SNAPSHOT//g')
   versiongenerate:
     runs-on: ubuntu-latest
     needs: prep
@@ -29,7 +29,7 @@ jobs:
       version: ${{ steps.version.outputs.version }}
     steps:
       - id: version
-        run: echo ::set-output name=version::${{ needs.prep.outputs.ver }}-${{ needs.prep.outputs.rev }}
+        run: echo ::set-output name=version::${{ needs.prep.outputs.ver }}-SNAPSHOT-${{ needs.prep.outputs.rev }}
   build:
     runs-on: ubuntu-latest
     needs: versiongenerate

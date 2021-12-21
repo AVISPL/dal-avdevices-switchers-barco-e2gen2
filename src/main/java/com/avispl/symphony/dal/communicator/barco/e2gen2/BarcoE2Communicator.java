@@ -4,6 +4,7 @@
 package com.avispl.symphony.dal.communicator.barco.e2gen2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -1028,7 +1029,7 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 			layerDTO.setLinkLayerId(linkLayerId);
 			Map<Object, Object> changeScreenParams = new HashMap<>();
 			changeScreenParams.put(BarcoE2Constant.ID, destId);
-			changeScreenParams.put(BarcoE2Constant.LAYERS, List.of(layerDTO).toArray());
+			changeScreenParams.put(BarcoE2Constant.LAYERS, Arrays.asList(layerDTO).toArray());
 			JsonNode changeScreenContentResponse = requestByMethod(BarcoE2Constant.METHOD_CHANGE_CONTENT, changeScreenParams);
 			if (changeScreenContentResponse.get(BarcoE2Constant.SUCCESS_STATUS).asInt() != 0) {
 				throw new CommandFailureException(this.getAddress(), "changeContent", "Fail to clear source from layer");
@@ -1074,10 +1075,10 @@ public class BarcoE2Communicator extends RestCommunicator implements Monitorable
 		changeScreenParams.put(BarcoE2Constant.ID, currentScreenDestId);
 		boolean result;
 		if (isMixedLayer) {
-			changeScreenParams.put(BarcoE2Constant.LAYERS, List.of(layerDTOList.get(0)).toArray());
+			changeScreenParams.put(BarcoE2Constant.LAYERS, Arrays.asList(layerDTOList.get(0)).toArray());
 			boolean assignFirstLayer = requestByMethod(BarcoE2Constant.METHOD_CHANGE_CONTENT, changeScreenParams).get(BarcoE2Constant.SUCCESS_STATUS).asInt() == 0;
 			changeScreenParams.remove(BarcoE2Constant.LAYERS);
-			changeScreenParams.put(BarcoE2Constant.LAYERS, List.of(layerDTOList.get(1)).toArray());
+			changeScreenParams.put(BarcoE2Constant.LAYERS, Arrays.asList(layerDTOList.get(1)).toArray());
 			boolean assignSecondLayer = requestByMethod(BarcoE2Constant.METHOD_CHANGE_CONTENT, changeScreenParams).get(BarcoE2Constant.SUCCESS_STATUS).asInt() == 0;
 			result = assignFirstLayer && assignSecondLayer;
 		} else {
